@@ -11,24 +11,23 @@ const ClinicDetails = () => {
   const { clinics, loading } = useSelector((state) => state.clinics);
   const { doctors } = useSelector((state) => state.doctors);
 
-  const clinicDoctors = doctors?.filter(
-    (doc) => doc?.clinic?._id === id
-  );
+  const clinic = clinics?.find((item) => item._id === id);
+  const clinicDoctors = doctors?.filter((doc) => doc?.clinic?._id === id);
 
   useEffect(() => {
-    if (!clinics || clinics.length === 0) {
+    if (!clinics?.length) {
       dispatch(getClinics());
+    }
+    if (!doctors?.length) {
       dispatch(getDoctors());
     }
-  }, [dispatch]);
-
-  const clinic = clinics?.find((item) => item._id === id);
+  }, [dispatch, clinics?.length, doctors?.length]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-blue-600 font-semibold text-lg">
-          Loading clinic details...
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white via-slate-50 to-slate-100">
+        <p className="text-blue-600 font-semibold text-lg animate-pulse">
+          Loading clinic details…
         </p>
       </div>
     );
@@ -36,89 +35,92 @@ const ClinicDetails = () => {
 
   if (!clinic) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-600 font-bold text-xl">
-          Clinic Not Found
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white via-slate-50 to-slate-100">
+        <p className="text-rose-600 font-bold text-xl">
+          Clinic not found
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
-
-      {/* ===== MAIN WRAPPER (FULL WIDTH) ===== */}
-      <div className="w-full bg-white rounded-xl shadow-md p-4 md:p-6">
-
-        {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">
-            🏥 {clinic.name}
-          </h1>
-
-          <span
-            className={`px-3 py-1 text-xs md:text-sm rounded-full text-white w-fit ${clinic.status === "Active"
-                ? "bg-green-600"
-                : "bg-red-600"
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
+      <div className="mx-auto max-w-6xl space-y-8">
+        {/* Hero */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-blue-500">
+                Clinic
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold text-slate-900">
+                {clinic.name}
+              </h1>
+              <p className="text-sm text-slate-500">{clinic.location}</p>
+            </div>
+            <span
+              className={`self-start rounded-full px-4 py-1 text-xs font-semibold ${
+                clinic.status === "Active"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-rose-100 text-rose-700"
               }`}
-          >
-            {clinic.status}
-          </span>
-        </div>
+            >
+              {clinic.status}
+            </span>
+          </div>
+        </section>
 
-        {/* ===== DETAILS GRID ===== */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-          <DetailBox title="👨‍⚕️ Doctors" value={clinic.doctors} />
-          <DetailBox title="🏥 Capacity" value={clinic.capacity} />
-          <DetailBox title="📍 Location" value={clinic.location} />
-          <DetailBox title="📞 Phone" value={clinic.phone} />
-
-          <DetailBox
-            title="🕒 Timings"
-            value={`${clinic.openingTime} - ${clinic.closingTime}`}
-          />
-
-          <div className="sm:col-span-2 lg:col-span-3">
-            <div className="bg-gray-50 p-3 md:p-4 rounded-lg border">
-              <p className="text-sm font-semibold text-gray-600 mb-1">
+        {/* Detail grid */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <DetailBox title="👩‍⚕️ Doctors" value={clinic.doctors} />
+            <DetailBox title="🏥 Capacity" value={clinic.capacity} />
+            <DetailBox title="📍 Location" value={clinic.location} />
+            <DetailBox title="📞 Phone" value={clinic.phone} />
+            <DetailBox
+              title="🕒 Timings"
+              value={`${clinic.openingTime} – ${clinic.closingTime}`}
+            />
+            <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
                 📝 Description
               </p>
-              <p className="text-gray-700 text-sm md:text-base">
-                {clinic.description}
+              <p className="text-sm text-slate-700">
+                {clinic.description || "No description provided."}
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ===== DOCTORS TABLE ===== */}
-        <div className="mt-8">
+        {/* Doctors table */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h2 className="text-xl font-semibold text-slate-900">
+              👨‍⚕️ Assigned Doctors
+            </h2>
+            <span className="text-sm text-slate-500">
+              {clinicDoctors?.length || 0} linked
+            </span>
+          </div>
 
-          <h2 className="text-lg md:text-xl font-bold mb-3">
-            👨‍⚕️ Assigned Doctors
-          </h2>
-
-          <div className="w-full overflow-x-auto rounded-lg border">
-            <table className="w-full min-w-[600px] text-sm md:text-base">
-
-              <thead className="bg-gray-200">
+          <div className="overflow-x-auto rounded-2xl border border-slate-100">
+            <table className="min-w-full text-sm text-slate-700">
+              <thead className="bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th className="p-3 text-left">Name</th>
-                  <th className="p-3 text-left">Specialization</th>
-                  <th className="p-3 text-left">Phone</th>
-                  <th className="p-3 text-left">Email</th>
+                  <th className="px-4 py-3 text-left">Name</th>
+                  <th className="px-4 py-3 text-left">Specialization</th>
+                  <th className="px-4 py-3 text-left">Phone</th>
+                  <th className="px-4 py-3 text-left">Email</th>
                 </tr>
               </thead>
-
               <tbody>
-                {clinicDoctors?.length > 0 ? (
+                {clinicDoctors?.length ? (
                   clinicDoctors.map((doc) => (
                     <tr
                       key={doc._id}
-                      className="border-t hover:bg-blue-50 transition"
+                      className="border-t border-slate-100 hover:bg-blue-50/30"
                     >
-                      {/* ✅ NAME WITH NAVLINK */}
-                      <td className="p-3">
+                      <td className="px-4 py-3">
                         <NavLink
                           to={`/doctors/${doc._id}`}
                           className="text-blue-600 font-medium hover:underline"
@@ -126,16 +128,11 @@ const ClinicDetails = () => {
                           {doc.name}
                         </NavLink>
                       </td>
-
-                      <td className="p-3">
+                      <td className="px-4 py-3">
                         {doc.specializations?.join(", ") || "N/A"}
                       </td>
-
-                      <td className="p-3">
-                        {doc.phone || "N/A"}
-                      </td>
-
-                      <td className="p-3 break-all">
+                      <td className="px-4 py-3">{doc.phone || "N/A"}</td>
+                      <td className="px-4 py-3 break-all">
                         {doc.email || "N/A"}
                       </td>
                     </tr>
@@ -144,31 +141,28 @@ const ClinicDetails = () => {
                   <tr>
                     <td
                       colSpan="4"
-                      className="p-4 text-center text-gray-500"
+                      className="px-4 py-6 text-center text-slate-500"
                     >
-                      No Doctors Assigned
+                      No doctors assigned yet.
                     </td>
                   </tr>
                 )}
               </tbody>
-
             </table>
           </div>
-
-        </div>
-
+        </section>
       </div>
     </div>
   );
 };
 
-/* ================= DETAIL BOX ================= */
-
 const DetailBox = ({ title, value }) => (
-  <div className="bg-gray-50 border rounded-lg p-3 md:p-4 hover:shadow-sm transition">
-    <p className="text-xs md:text-sm text-gray-500">{title}</p>
-    <p className="text-sm md:text-base font-semibold mt-1">
-      {value ?? "N/A"}
+  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+      {title}
+    </p>
+    <p className="mt-2 text-lg font-semibold text-slate-900">
+      {value || "N/A"}
     </p>
   </div>
 );

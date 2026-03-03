@@ -8,7 +8,6 @@ const BASE_URL =
 function Profile() {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector((state) => state.user);
-  console.log("USER PROFILE ===>", user);
 
   useEffect(() => {
     dispatch(fetchUserProfile());
@@ -16,24 +15,18 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-xl">
-        Loading...
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-slate-50 to-slate-100">
+        <p className="text-lg font-semibold text-blue-600">Loading profile…</p>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !user) {
     return (
-      <div className="flex justify-center items-center h-screen text-red-500 text-xl">
-        {error}
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center h-screen text-red-500 text-xl">
-        User Not Found
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-white via-slate-50 to-slate-100">
+        <p className="text-lg font-semibold text-rose-600">
+          {error || "User not found"}
+        </p>
       </div>
     );
   }
@@ -43,80 +36,69 @@ function Profile() {
     : "https://via.placeholder.com/150";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-3 md:p-6 flex justify-center">
-      <div className="bg-white shadow-xl rounded-2xl p-4 md:p-6 w-full max-w-6xl">
-
-        {/* ===== HEADER ===== */}
-        <div className="flex flex-col md:flex-row items-center gap-6">
-
-          {/* IMAGE */}
-          <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-blue-500 shadow">
-            <img
-              src={profileImage}
-              alt="profile"
-              className="w-full h-full object-cover"
-            />
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
+      <div className="mx-auto max-w-5xl space-y-8">
+        {/* Hero */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:items-center">
+            <div className="flex h-32 w-32 items-center justify-center rounded-3xl border-4 border-white bg-slate-100 shadow-lg">
+              <img
+                src={profileImage}
+                alt="profile"
+                className="h-full w-full rounded-2xl object-cover"
+              />
+            </div>
+            <div className="text-center md:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-blue-500">
+                Profile
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold text-slate-900">
+                {user.name}
+              </h1>
+              <p className="text-sm text-slate-500">
+                Role · {user.role || "N/A"}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">ID: {user._id}</p>
+            </div>
           </div>
+        </section>
 
-          {/* INFO */}
-          <div className="text-center md:text-left">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              {user.name}
-            </h1>
-
-            <p className="text-blue-600 font-medium mt-1">
-              🩺 {user.role || "N/A"}
-            </p>
-
-            <p className="text-gray-400 text-xs mt-1">
-              🆔 ID: {user._id}
-            </p>
+        {/* Info grid */}
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <InfoCard title="Email" icon="📧">
+              {user.email || "N/A"}
+            </InfoCard>
+            <InfoCard title="Experience" icon="🎓">
+              {user.experience || 0} Years
+            </InfoCard>
+            <InfoCard title="Phone" icon="📞">
+              {user.phone || "N/A"}
+            </InfoCard>
+            <InfoCard title="Created At" icon="⏰">
+              {user.createdAt
+                ? new Date(user.createdAt).toLocaleString()
+                : "N/A"}
+            </InfoCard>
+            <InfoCard title="Updated At" icon="🔄">
+              {user.updatedAt
+                ? new Date(user.updatedAt).toLocaleString()
+                : "N/A"}
+            </InfoCard>
           </div>
-        </div>
-
-        {/* ===== DETAILS ===== */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-          <InfoCard title="Email" icon="📧">
-            {user.email || "N/A"}
-          </InfoCard>
-
-          <InfoCard title="Experience" icon="🎓">
-            {user.experience || 0} Years
-          </InfoCard>
-
-          <InfoCard title="Phone" icon="📞">
-            {user.phone || "N/A"}
-          </InfoCard>
-
-          <InfoCard title="Created At" icon="⏰">
-            {user.createdAt
-              ? new Date(user.createdAt).toLocaleString()
-              : "N/A"}
-          </InfoCard>
-
-          <InfoCard title="Updated At" icon="🔄">
-            {user.updatedAt
-              ? new Date(user.updatedAt).toLocaleString()
-              : "N/A"}
-          </InfoCard>
-
-        </div>
+        </section>
       </div>
     </div>
   );
 }
 
-/* ================= REUSABLE CARD ================= */
-
 function InfoCard({ title, icon, children }) {
   return (
-    <div className="bg-gray-50 p-3 md:p-4 rounded-xl shadow-sm hover:shadow-md transition border border-gray-200">
-      <p className="text-xs md:text-sm text-gray-500 mb-1">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 shadow-inner shadow-white">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
         {icon} {title}
       </p>
-
-      <p className="text-sm md:text-base font-semibold text-gray-800 break-words">
+      <p className="mt-2 text-lg font-semibold text-slate-900 break-words">
         {children}
       </p>
     </div>

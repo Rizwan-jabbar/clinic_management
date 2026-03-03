@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteClinic,
@@ -6,18 +7,19 @@ import {
   updateClinic,
 } from "../../redux/clinicThunk/clinicThunk";
 
+const ModalPortal = ({ children }) => {
+  if (typeof document === "undefined") return null;
+  return createPortal(children, document.body);
+};
+
 const ClinicItem = ({ clinic }) => {
   const dispatch = useDispatch();
-
-  /* ================= USER FROM REDUX ================= */
   const { user } = useSelector((state) => state.user);
   const isAdmin = user?.role === "admin";
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  /* ================= FORM STATE ================= */
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,8 +31,6 @@ const ClinicItem = ({ clinic }) => {
     closingTime: "",
     description: "",
   });
-
-  /* ================= AUTO FILL ================= */
 
   useEffect(() => {
     if (clinic) {
@@ -47,15 +47,12 @@ const ClinicItem = ({ clinic }) => {
     }
   }, [clinic]);
 
-  /* ================= SCROLL LOCK ================= */
-
   useEffect(() => {
     if (showDeleteConfirm || showEditForm) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -63,36 +60,25 @@ const ClinicItem = ({ clinic }) => {
 
   if (!clinic) return null;
 
-  /* ================= PROPAGATION HANDLER ================= */
-
   const stopPropagation = (e, callback) => {
     e.preventDefault();
     e.stopPropagation();
     if (callback) callback();
   };
 
-  /* ================= FORM CHANGE ================= */
-
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  /* ================= UPDATE ================= */
 
   const handleUpdateSubmit = async () => {
     try {
       setLoading(true);
-
       await dispatch(
         updateClinic({
           clinicId: clinic._id,
           updatedData: formData,
         })
       ).unwrap();
-
       setShowEditForm(false);
     } catch (error) {
       console.error("Update Failed:", error);
@@ -101,212 +87,177 @@ const ClinicItem = ({ clinic }) => {
     }
   };
 
-  /* ================= STATUS TOGGLE ================= */
-
   const handleStatusToggle = () => {
     dispatch(
       updateClinicStatus({
         clinicId: clinic._id,
-        newStatus:
-          clinic.status === "Active" ? "Inactive" : "Active",
+        newStatus: clinic.status === "Active" ? "Inactive" : "Active",
       })
     );
   };
 
   return (
     <>
-      {/* ================= CARD ================= */}
-      <div className="w-full p-6 rounded-3xl shadow-xl bg-gradient-to-br from-blue-100 to-blue-200 hover:shadow-2xl transition duration-300">
-
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold">
-            {clinic.name}
-          </h3>
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-blue-500">
+              Clinic
+            </p>
+            <h3 className="text-lg font-semibold text-slate-900">
+              {clinic.name}
+            </h3>
+            <p className="text-sm text-slate-500">{clinic.location}</p>
+          </div>
 
           <span
-            className={`px-3 py-1 text-xs rounded-full text-white ${
+            className={`self-start rounded-full px-3 py-1 text-xs font-semibold ${
               clinic.status === "Active"
-                ? "bg-green-600"
-                : "bg-red-600"
+                ? "bg-emerald-100 text-emerald-700"
+                : "bg-rose-100 text-rose-700"
             }`}
           >
             {clinic.status}
           </span>
         </div>
 
-        {/* INFO */}
-        <div className="space-y-2 text-sm mb-6">
-          <p>👨‍⚕️ Doctors: {clinic.doctors}</p>
+        <div className="mt-3 space-y-1 text-sm text-slate-600">
+          <p>👩‍⚕️ Doctors: {clinic.doctors || "N/A"}</p>
+          <p>🏥 Capacity: {clinic.capacity || "N/A"}</p>
           <p>
-            🕒 Timings: {clinic.openingTime} -{" "}
-            {clinic.closingTime}
+            🕒 Timings: {clinic.openingTime || "--"} –{" "}
+            {clinic.closingTime || "--"}
           </p>
-          <p>🏥 Capacity: {clinic.capacity}</p>
+          <p>📞 Phone: {clinic.phone || "N/A"}</p>
         </div>
 
-        {/* ================= ADMIN BUTTONS ================= */}
         {isAdmin && (
-          <div className="flex gap-3">
-
-            {/* EDIT */}
+          <div className="mt-4 flex flex-wrap gap-2">
             <button
               onClick={(e) =>
                 stopPropagation(e, () => setShowEditForm(true))
               }
-              className="flex-1 bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition"
+              className="flex-1 min-w-[140px] rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 transition hover:bg-blue-100"
             >
               Edit
             </button>
-
-            {/* DELETE */}
             <button
               onClick={(e) =>
                 stopPropagation(e, () => setShowDeleteConfirm(true))
               }
-              className="flex-1 bg-red-600 text-white py-2 rounded-xl hover:bg-red-700 transition"
+              className="flex-1 min-w-[140px] rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
             >
               Delete
             </button>
-
-            {/* STATUS */}
             <button
-              onClick={(e) =>
-                stopPropagation(e, handleStatusToggle)
-              }
-              className="flex-1 bg-purple-600 text-white py-2 rounded-xl hover:bg-purple-700 transition"
+              onClick={(e) => stopPropagation(e, handleStatusToggle)}
+              className="flex-1 min-w-[140px] rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100"
             >
-              {clinic.status === "Active"
-                ? "Deactivate"
-                : "Activate"}
+              {clinic.status === "Active" ? "Deactivate" : "Activate"}
             </button>
-
           </div>
         )}
       </div>
 
-      {/* ================= DELETE MODAL ================= */}
       {isAdmin && showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-
+        <ModalPortal>
           <div
-            className="absolute inset-0 bg-black/60"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
             onClick={() => setShowDeleteConfirm(false)}
-          />
-
-          <div className="relative bg-white w-[90%] max-w-md rounded-3xl shadow-2xl p-8">
-            <h2 className="text-xl font-bold mb-4">
-              Delete Clinic?
-            </h2>
-
-            <p className="mb-6">
-              Are you sure? This action cannot be undone.
-            </p>
-
-            <div className="flex justify-end gap-4">
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setShowDeleteConfirm(false);
-                }}
-                className="px-5 py-2 bg-gray-300 rounded-xl"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={(e) =>
-                  stopPropagation(e, () => {
-                    dispatch(deleteClinic(clinic._id));
-                    setShowDeleteConfirm(false);
-                  })
-                }
-                className="px-5 py-2 bg-red-600 text-white rounded-xl"
-              >
-                Delete
-              </button>
-
+          >
+            <div
+              className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-slate-900">
+                Delete clinic?
+              </h2>
+              <p className="mt-3 text-sm text-slate-500">
+                This action can’t be undone.
+              </p>
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) =>
+                    stopPropagation(e, () => {
+                      dispatch(deleteClinic(clinic._id));
+                      setShowDeleteConfirm(false);
+                    })
+                  }
+                  className="flex-1 rounded-xl bg-rose-600 py-2 text-sm font-semibold text-white shadow shadow-rose-500/30 transition hover:bg-rose-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
 
-      {/* ================= EDIT MODAL ================= */}
       {isAdmin && showEditForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-
+        <ModalPortal>
           <div
-            className="absolute inset-0 bg-black/60"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
             onClick={() => setShowEditForm(false)}
-          />
-
-          <div className="relative bg-white w-[95%] max-w-2xl rounded-3xl shadow-2xl p-10 max-h-[90vh] overflow-y-auto">
-
-            <h2 className="text-2xl font-bold mb-8">
-              ✏ Edit Clinic
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              {Object.keys(formData).map((key) => (
-                <div key={key} className="flex flex-col">
-                  <label className="font-semibold mb-2 capitalize">
-                    {key}
+          >
+            <div
+              className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-semibold text-slate-900">
+                ✏ Edit Clinic
+              </h2>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {Object.keys(formData).map((key) => (
+                  <label key={key} className="text-xs font-semibold text-slate-600">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                    {key === "description" ? (
+                      <textarea
+                        name={key}
+                        rows="3"
+                        value={formData[key] || ""}
+                        onChange={handleChange}
+                        className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        name={key}
+                        value={formData[key] || ""}
+                        onChange={handleChange}
+                        className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      />
+                    )}
                   </label>
-
-                  {key === "description" ? (
-                    <textarea
-                      name={key}
-                      value={formData[key] || ""}
-                      onChange={handleChange}
-                      rows="3"
-                      className="border px-4 py-2 rounded-xl"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      name={key}
-                      value={formData[key] || ""}
-                      onChange={handleChange}
-                      className="border px-4 py-2 rounded-xl"
-                    />
-                  )}
-                </div>
-              ))}
-
+                ))}
+              </div>
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowEditForm(false)}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleUpdateSubmit();
+                  }}
+                  disabled={loading}
+                  className="flex-1 rounded-xl bg-blue-600 py-2 text-sm font-semibold text-white shadow shadow-blue-500/30 transition hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {loading ? "Updating..." : "Save changes"}
+                </button>
+              </div>
             </div>
-
-            <div className="flex justify-end gap-4 mt-8">
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setShowEditForm(false);
-                }}
-                className="px-6 py-2 bg-gray-300 rounded-xl"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  handleUpdateSubmit();
-                }}
-                disabled={loading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-xl disabled:opacity-50"
-              >
-                {loading ? "Updating..." : "Save Changes"}
-              </button>
-
-            </div>
-
           </div>
-        </div>
+        </ModalPortal>
       )}
     </>
   );

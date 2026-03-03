@@ -5,95 +5,125 @@ import { getAppointments } from "../../redux/appointmentThunk/appointmentThunk";
 
 function MyPatient() {
   const dispatch = useDispatch();
-
   const { user } = useSelector((state) => state.user);
-  const { appointments } = useSelector((state) => state.appointments);
+  const { appointments, loading } = useSelector((state) => state.appointments);
 
-  const patients = appointments?.filter(
-    (pat) => pat.doctor._id === user?._id
-  );
+  // const patients = appointments?.filter(
+  //   (pat) => pat.doctor._id === user?._id
+  // );
 
+  const patients = []
   useEffect(() => {
     dispatch(fetchUserProfile());
     dispatch(getAppointments());
   }, [dispatch]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        My Patients
-      </h1>
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-blue-500">
+            Patients
+          </p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-3xl font-semibold text-slate-900">
+                My Patients
+              </h1>
+              <p className="text-sm text-slate-500">
+                Track bookings, payment status, and clinic context at a glance.
+              </p>
+            </div>
+            <span className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
+              {patients?.length || 0} listed
+            </span>
+          </div>
+        </header>
 
-      {patients && patients.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {patients.map((appointment) => (
-            <div
-              key={appointment._id}
-              className="bg-white rounded-xl shadow-md 
-                         border border-gray-100 
-                         p-5 transition hover:shadow-lg"
-            >
-              {/* Top Section */}
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    {appointment.patient.name}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {appointment.patient.email}
+        {loading ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/50">
+            <p className="text-sm font-semibold text-blue-600">
+              Loading patients…
+            </p>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[...Array(3)].map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-36 animate-pulse rounded-2xl bg-slate-100"
+                />
+              ))}
+            </div>
+          </section>
+        ) : patients && patients.length > 0 ? (
+          <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {patients.map((appointment) => (
+              <article
+                key={appointment._id}
+                className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-lg shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      {appointment.patient.name}
+                    </h2>
+                    <p className="text-sm text-slate-500 break-all">
+                      {appointment.patient.email}
+                    </p>
+                  </div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-xl font-semibold text-blue-600">
+                    {appointment.patient.name.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-1 text-sm text-slate-600">
+                  <p>
+                    <span className="font-semibold text-slate-800">
+                      Clinic:
+                    </span>{" "}
+                    {appointment.clinic?.name || "N/A"}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-slate-800">
+                      Date:
+                    </span>{" "}
+                    {new Date(
+                      appointment.appointmentDate
+                    ).toLocaleDateString()}
                   </p>
                 </div>
 
-                <div className="bg-blue-100 text-blue-600 
-                                h-10 w-10 rounded-full 
-                                flex items-center justify-center 
-                                font-bold">
-                  {appointment.patient.name.charAt(0).toUpperCase()}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      appointment.status === "Cancelled"
+                        ? "bg-rose-100 text-rose-700"
+                        : "bg-emerald-100 text-emerald-700"
+                    }`}
+                  >
+                    {appointment.status}
+                  </span>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      appointment.paymentStatus === "Unpaid"
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {appointment.paymentStatus}
+                  </span>
                 </div>
-              </div>
-
-              {/* Clinic */}
-              <p className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Clinic:</span>{" "}
-                {appointment.clinic?.name}
-              </p>
-
-              {/* Date */}
-              <p className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">Date:</span>{" "}
-                {new Date(
-                  appointment.appointmentDate
-                ).toLocaleDateString()}
-              </p>
-
-              {/* Status Row */}
-              <div className="flex justify-between mt-4">
-                <span
-                  className={`text-xs px-3 py-1 rounded-full font-medium ${
-                    appointment.status === "Cancelled"
-                      ? "bg-red-100 text-red-600"
-                      : "bg-green-100 text-green-600"
-                  }`}
-                >
-                  {appointment.status}
-                </span>
-
-                <span
-                  className={`text-xs px-3 py-1 rounded-full font-medium ${
-                    appointment.paymentStatus === "Unpaid"
-                      ? "bg-yellow-100 text-yellow-600"
-                      : "bg-green-100 text-green-600"
-                  }`}
-                >
-                  {appointment.paymentStatus}
-                </span>
-              </div>
+              </article>
+            ))}
+          </section>
+        ) : (
+          <section className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-slate-500 shadow-lg shadow-slate-200/50">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-3xl">
+              📋
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-500">No patients found.</p>
-      )}
+            No patients found yet.
+          </section>
+        )}
+      </div>
     </div>
   );
 }

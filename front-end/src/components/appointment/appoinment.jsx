@@ -3,218 +3,155 @@ import { useDispatch, useSelector } from "react-redux";
 import { createAppointment } from "../../redux/appointmentThunk/appointmentThunk";
 
 const AppointmentForm = ({
-    doctorName,
-    clinicName,
-    doctorId,
-    clinicId,
-    onClose,
+  doctorName,
+  clinicName,
+  doctorId,
+  clinicId,
+  onClose,
 }) => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.appointment?.loading);
 
-    /* ✅ Safe loading from redux */
-    const loading = useSelector(
-        (state) => state.appointment?.loading
-    );
+  const [formData, setFormData] = useState({
+    appointmentDate: "",
+    appointmentTime: "",
+    reason: "",
+  });
+  const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-    const [formData, setFormData] = useState({
-        appointmentDate: "",
-        appointmentTime: "",
-        reason: "",
-    });
+  const handleChange = (e) => {
+    setErrorMsg("");
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const [success, setSuccess] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
+  const handleSubmit = async () => {
+    try {
+      if (!formData.appointmentDate || !formData.appointmentTime) {
+        setErrorMsg("Date and time are required");
+        return;
+      }
 
-    /* ===============================
-       ✅ HANDLE CHANGE
-    ================================*/
-    const handleChange = (e) => {
-        setErrorMsg("");
+      const combinedDateTime = new Date(
+        `${formData.appointmentDate}T${formData.appointmentTime}`
+      ).toISOString();
 
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+      await dispatch(
+        createAppointment({
+          doctorId,
+          clinicId,
+          appointmentDate: combinedDateTime,
+          reason: formData.reason,
+        })
+      ).unwrap();
 
-    /* ===============================
-       ✅ SUBMIT FORM
-    ================================*/
-    const handleSubmit = async () => {
-        try {
-            if (
-                !formData.appointmentDate ||
-                !formData.appointmentTime
-            ) {
-                setErrorMsg("Date and Time are required");
-                return;
-            }
+      setSuccess(true);
+      setFormData({ appointmentDate: "", appointmentTime: "", reason: "" });
+    } catch (error) {
+      console.log("Appointment Error:", error);
+      setErrorMsg(error || "Something went wrong");
+    }
+  };
 
-            const combinedDateTime = new Date(
-                `${formData.appointmentDate}T${formData.appointmentTime}`
-            ).toISOString();
+  return (
+    <div className="relative w-full max-w-xl overflow-y-auto
+    rounded-3xl border border-slate-200 bg-white/95 p-6 shadow-2xl shadow-slate-200/80">
+      {/* Success overlay */}
+      {success && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-black/50 backdrop-blur-sm">
+          <div className="w-[90%] max-w-md rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-2xl">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-4xl text-emerald-600">
+              ✔
+            </div>
+            <h2 className="text-2xl font-semibold text-slate-900">
+              Appointment requested
+            </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              You’ll receive confirmation shortly.
+            </p>
+            <button
+              onClick={onClose}
+              className="mt-6 w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow shadow-emerald-400/40 transition hover:bg-emerald-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
-            await dispatch(
-                createAppointment({
-                    doctorId,
-                    clinicId,
-                    appointmentDate: combinedDateTime,
-                    reason: formData.reason,
-                })
-            ).unwrap();
+      <div className={success ? "pointer-events-none opacity-20" : ""}>
+        <div className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-blue-500">
+            Booking
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+            Schedule appointment
+          </h2>
+          <p className="text-sm text-slate-500">
+            Choose a date, time, and tell us the reason for the visit.
+          </p>
+        </div>
 
+        <div className="mt-6 space-y-4">
+          <input
+            type="text"
+            value={doctorName || ""}
+            disabled
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500"
+          />
+          <input
+            type="text"
+            value={clinicName || ""}
+            disabled
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500"
+          />
+          <input
+            type="date"
+            name="appointmentDate"
+            value={formData.appointmentDate}
+            onChange={handleChange}
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          <input
+            type="time"
+            name="appointmentTime"
+            value={formData.appointmentTime}
+            onChange={handleChange}
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          <textarea
+            rows="3"
+            name="reason"
+            value={formData.reason}
+            onChange={handleChange}
+            placeholder="Reason for appointment..."
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+          {errorMsg && (
+            <p className="text-sm font-semibold text-rose-600">{errorMsg}</p>
+          )}
+        </div>
 
-            setSuccess(true);
-
-            // ✅ Reset form after success
-            setFormData({
-                appointmentDate: "",
-                appointmentTime: "",
-                reason: "",
-            });
-
-            console.log({
-                doctorId,
-                clinicId,
-                appointmentDate: combinedDateTime,
-            });
-
-        } catch (error) {
-            console.log("Appointment Error:", error);
-            setErrorMsg(error || "Something went wrong");
-        }
-    };
-
-
-    return (
-        <div className="relative bg-white w-full max-w-xl mx-auto rounded-3xl shadow-2xl p-6 md:p-8">
-
-          {/* ================= SUCCESS BOX (IMPROVED UI) ================= */}
-{success && (
-  <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-3xl z-50 transition-all duration-300">
-
-    <div className="bg-white w-[90%] max-w-md rounded-3xl shadow-2xl p-8 text-center animate-fadeIn">
-
-      {/* Icon */}
-      <div className="flex justify-center mb-5">
-        <div className="bg-green-100 text-green-600 text-5xl p-4 rounded-full shadow-md">
-          ✔
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading}
+            className="flex-1 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow shadow-blue-500/30 transition hover:bg-blue-700 disabled:opacity-60"
+          >
+            {loading ? "Booking…" : "Confirm appointment"}
+          </button>
         </div>
       </div>
-
-      {/* Title */}
-      <h2 className="text-2xl font-bold text-gray-800 mb-3">
-        Appointment Requested
-      </h2>
-
-      {/* Description */}
-      <p className="text-gray-500 text-sm mb-6">
-        Your appointment has been successfully submitted.
-        You will receive confirmation shortly.
-      </p>
-
-      {/* Button */}
-      <button
-        onClick={onClose}
-        className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
-      >
-        Close
-      </button>
-
     </div>
-
-  </div>
-)}
-
-            {/* ================= FORM ================= */}
-            <div className={`${success ? "opacity-20 pointer-events-none" : ""}`}>
-
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        📅 Book Appointment
-                    </h2>
-                </div>
-
-                <div className="space-y-5">
-
-                    {/* Doctor */}
-                    <input
-                        type="text"
-                        value={doctorName || ""}
-                        disabled
-                        className="w-full bg-gray-100 border rounded-xl px-4 py-3 cursor-not-allowed"
-                    />
-
-                    {/* Clinic */}
-                    <input
-                        type="text"
-                        value={clinicName || ""}
-                        disabled
-                        className="w-full bg-gray-100 border rounded-xl px-4 py-3 cursor-not-allowed"
-                    />
-
-                    {/* Date */}
-                    <input
-                        type="date"
-                        name="appointmentDate"
-                        value={formData.appointmentDate}
-                        onChange={handleChange}
-                        className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-
-                    {/* Time */}
-                    <input
-                        type="time"
-                        name="appointmentTime"
-                        value={formData.appointmentTime}
-                        onChange={handleChange}
-                        className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-
-                    {/* Reason */}
-                    <textarea
-                        rows="3"
-                        name="reason"
-                        value={formData.reason}
-                        onChange={handleChange}
-                        placeholder="Reason for appointment..."
-                        className="w-full border rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-
-                    {/* Error Message */}
-                    {errorMsg && (
-                        <p className="text-red-500 text-sm">
-                            {errorMsg}
-                        </p>
-                    )}
-
-                </div>
-
-                {/* Buttons */}
-                <div className="flex gap-4 mt-6">
-
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="flex-1 bg-gray-200 hover:bg-gray-300 py-3 rounded-xl font-semibold"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
-                    >
-                        {loading ? "Booking..." : "Confirm Appointment"}
-                    </button>
-
-                </div>
-
-            </div>
-        </div>
-    );
+  );
 };
 
 export default AppointmentForm;
