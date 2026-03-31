@@ -42,6 +42,12 @@ const doctorSchema = new mongoose.Schema({
         ]
     },
 
+    doctorFee: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+
     clinic: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Clinic",

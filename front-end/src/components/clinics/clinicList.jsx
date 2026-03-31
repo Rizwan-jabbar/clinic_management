@@ -1,9 +1,29 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
-import { deleteClinic, getClinics } from "../../redux/clinicThunk/clinicThunk";
-import ClinicItem from "./clinicItems";
+import { useNavigate } from "react-router-dom";
+import {
+  deleteClinic,
+  getClinics,
+  updateClinicStatus,
+  updateClinic,
+} from "../../redux/clinicThunk/clinicThunk";
 import { fetchUserProfile } from "../../redux/userThunk/userThunk";
+import { createPortal } from "react-dom";
+import {
+  Building2,
+  Clock3,
+  MapPin,
+  Phone,
+  Plus,
+  Search,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
+
+const ModalPortal = ({ children }) => {
+  if (typeof document === "undefined") return null;
+  return createPortal(children, document.body);
+};
 
 const ClinicList = () => {
   const dispatch = useDispatch();
@@ -11,120 +31,323 @@ const ClinicList = () => {
 
   const clinics = useSelector((state) => state.clinics.clinics);
   const loading = useSelector((state) => state.clinics.loading);
-  const message = useSelector((state) => state.clinics.message);
   const { user } = useSelector((state) => state.user);
-  const lowerCaseRole = user?.role?.toLowerCase();
+
+  const isAdmin = user?.role?.toLowerCase() === "admin";
 
   const [search, setSearch] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedClinic, setSelectedClinic] = useState(null);
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
     dispatch(getClinics());
     dispatch(fetchUserProfile());
   }, [dispatch]);
 
-  const filteredClinics = search
-    ? clinics?.filter((clinic) =>
-        clinic?.name?.toLowerCase().includes(search.toLowerCase())
-      )
-    : clinics;
+  const filteredClinics = useMemo(() => {
+    return search
+      ? clinics?.filter((clinic) =>
+          clinic?.name?.toLowerCase().includes(search.toLowerCase())
+        )
+      : clinics;
+  }, [clinics, search]);
+
+  const openEditModal = (clinic) => {
+    setSelectedClinic(clinic);
+    setFormData(clinic);
+    setShowEditForm(true);
+  };
+
+  const openDeleteModal = (clinic) => {
+    setSelectedClinic(clinic);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteClinic(selectedClinic._id));
+    setShowDeleteConfirm(false);
+  };
+
+  const handleStatusToggle = (clinic) => {
+    dispatch(
+      updateClinicStatus({
+        clinicId: clinic._id,
+        newStatus: clinic.status === "Active" ? "Inactive" : "Active",
+      })
+    );
+  };
+
+  const handleUpdateSubmit = () => {
+    dispatch(
+      updateClinic({
+        clinicId: selectedClinic._id,
+        updatedData: formData,
+      })
+    );
+    setShowEditForm(false);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500">
-            Clinics
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-4">
+    <div className="space-y-5 font-clinic-body">
+      <section className="rounded-[32px] border border-white/60 bg-white/85 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-xl sm:p-7">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-3">
+            <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-sky-700">
+              <Building2 size={14} />
+              Clinics
+            </span>
             <div>
-              <h1 className="text-3xl font-semibold text-slate-900">
-                Discover care locations
+              <h1 className="font-clinic-heading text-[30px] font-semibold text-slate-900">
+                Clinics Management
               </h1>
-              <p className="text-sm text-slate-500">
-                Browse clinics, filter results, and manage your network in a single view.
+              <p className="mt-2 max-w-2xl text-[13px] leading-6 text-slate-500">
+                Manage branches, check clinic status, and review key details in a cleaner clinic-style dashboard.
               </p>
             </div>
-            <div className="ml-auto flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-              <span>Total</span>
-              <span className="text-lg font-semibold text-slate-900">
-                {filteredClinics?.length || 0}
-              </span>
-              <span>Clinics</span>
+          </div>
+
+          {isAdmin && (
+            <button
+              onClick={() => navigate("/addClinic")}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-600 to-teal-500 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg shadow-sky-500/20 transition hover:from-sky-700 hover:to-teal-600"
+            >
+              <Plus size={15} />
+              Add Clinic
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-3xl border border-white/60 bg-white/85 p-5 shadow-lg shadow-slate-200/30">
+          <div className="flex items-center gap-3">
+            <span className="rounded-2xl bg-sky-50 p-3 text-sky-700">
+              <Building2 size={18} />
+            </span>
+            <div>
+              <p className="text-[12px] text-slate-500">Total Clinics</p>
+              <p className="mt-1 text-2xl font-semibold text-slate-900">{filteredClinics?.length || 0}</p>
             </div>
           </div>
-        </header>
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/40">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
-            <div className="flex-1">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Search Clinics
-              </label>
-              <div className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-600 focus-within:border-blue-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100">
-                <span className="text-slate-400">🔍</span>
-                <input
-                  type="text"
-                  placeholder="Search clinic..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            {lowerCaseRole === "admin" && (
-              <NavLink to="/addClinic" className="w-full md:w-auto">
-                <button className="w-full rounded-2xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/30 transition hover:bg-blue-700">
-                  + Add Clinic
-                </button>
-              </NavLink>
-            )}
-          </div>
-        </section>
-
-        {loading && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/40">
-            <p className="text-sm font-semibold text-blue-600">Loading clinics...</p>
-            <div className="mt-4 space-y-3">
-              {[...Array(3)].map((_, idx) => (
-                <div key={idx} className="h-24 animate-pulse rounded-2xl bg-slate-100" />
-              ))}
+        </div>
+        <div className="rounded-3xl border border-white/60 bg-white/85 p-5 shadow-lg shadow-slate-200/30">
+          <div className="flex items-center gap-3">
+            <span className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+              <ShieldCheck size={18} />
+            </span>
+            <div>
+              <p className="text-[12px] text-slate-500">Active Clinics</p>
+              <p className="mt-1 text-2xl font-semibold text-emerald-600">
+                {filteredClinics?.filter((clinic) => clinic.status === "Active").length || 0}
+              </p>
             </div>
           </div>
-        )}
+        </div>
+        <div className="rounded-3xl border border-white/60 bg-white/85 p-5 shadow-lg shadow-slate-200/30">
+          <div className="flex items-center gap-3">
+            <span className="rounded-2xl bg-cyan-50 p-3 text-cyan-700">
+              <Users size={18} />
+            </span>
+            <div>
+              <p className="text-[12px] text-slate-500">Overview</p>
+              <p className="mt-1 text-[13px] leading-6 text-slate-600">Quick branch review with simple management actions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {!loading && (
-          <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-200/40">
-            {filteredClinics?.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 py-12 text-center text-slate-500">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-3xl">
-                  🏥
-                </div>
-                <p className="text-lg font-semibold text-slate-800">
-                  No clinics found
-                </p>
-                <p className="text-sm text-slate-500">
-                  Try adjusting your search keywords or add a new clinic if you’re an admin.
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredClinics.map((clinic) => (
-                  <NavLink
-                    to={`/clinics/${clinic._id}`}
-                    key={clinic._id || clinic.id}
-                    className="group rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-[2px] shadow-md transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
-                  >
-                    <div className="h-full rounded-[28px] bg-white p-4">
-                      <ClinicItem clinic={clinic} />
+      <section className="rounded-[32px] border border-white/60 bg-white/85 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-xl sm:p-6">
+        <div className="relative">
+          <Search
+            size={17}
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <input
+            type="text"
+            placeholder="Search clinic"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-[13px] text-slate-700 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+          />
+        </div>
+      </section>
+
+      <section className="overflow-hidden rounded-[32px] border border-white/60 bg-white/90 shadow-xl shadow-slate-200/40 backdrop-blur-xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-[960px] w-full text-left text-[13px] text-slate-700">
+            <thead className="bg-slate-50/80 text-[11px] uppercase tracking-[0.18em] text-slate-500">
+              <tr>
+                <th className="px-5 py-4">Clinic</th>
+                <th className="px-5 py-4">Location</th>
+                <th className="px-5 py-4">Doctors</th>
+                <th className="px-5 py-4">Capacity</th>
+                <th className="px-5 py-4">Phone</th>
+                <th className="px-5 py-4">Timings</th>
+                <th className="px-5 py-4">Status</th>
+                {isAdmin && <th className="px-5 py-4">Actions</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredClinics?.map((clinic) => (
+                <tr
+                  key={clinic._id}
+                  onClick={() => navigate(`/clinics/${clinic._id}`)}
+                  className="cursor-pointer border-t border-slate-100 transition hover:bg-sky-50/40"
+                >
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="rounded-2xl bg-sky-50 p-3 text-sky-700">
+                        <Building2 size={18} />
+                      </span>
+                      <div>
+                        <p className="font-semibold text-slate-900">{clinic.name}</p>
+                        <p className="mt-1 text-[11px] text-slate-500">Clinic branch</p>
+                      </div>
                     </div>
-                  </NavLink>
+                  </td>
+                  <td className="px-5 py-4 text-slate-600">
+                    <span className="inline-flex items-center gap-2">
+                      <MapPin size={13} className="text-slate-400" />
+                      {clinic.location}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-slate-600">{clinic.doctors}</td>
+                  <td className="px-5 py-4 text-slate-600">{clinic.capacity}</td>
+                  <td className="px-5 py-4">
+                    <span className="inline-flex items-center gap-2 text-slate-600">
+                      <Phone size={13} className="text-slate-400" />
+                      {clinic.phone}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4">
+                    <span className="inline-flex items-center gap-2 text-slate-600">
+                      <Clock3 size={13} className="text-slate-400" />
+                      {clinic.openingTime} - {clinic.closingTime}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${
+                        clinic.status === "Active"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-rose-100 text-rose-700"
+                      }`}
+                    >
+                      {clinic.status}
+                    </span>
+                  </td>
+                  {isAdmin && (
+                    <td className="px-5 py-4">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(clinic);
+                          }}
+                          className="rounded-xl bg-sky-50 px-3 py-2 text-[12px] font-semibold text-sky-700 transition hover:bg-sky-100"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteModal(clinic);
+                          }}
+                          className="rounded-xl bg-rose-50 px-3 py-2 text-[12px] font-semibold text-rose-700 transition hover:bg-rose-100"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusToggle(clinic);
+                          }}
+                          className="rounded-xl bg-amber-50 px-3 py-2 text-[12px] font-semibold text-amber-700 transition hover:bg-amber-100"
+                        >
+                          {clinic.status === "Active" ? "Deactivate" : "Activate"}
+                        </button>
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {!loading && filteredClinics?.length === 0 && (
+          <div className="px-6 py-16 text-center text-slate-500">No clinics found.</div>
+        )}
+      </section>
+
+      {showDeleteConfirm && (
+        <ModalPortal>
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-[28px] border border-white/60 bg-white p-6 shadow-2xl shadow-slate-400/20">
+              <h2 className="font-clinic-heading text-xl font-semibold text-slate-900">Delete Clinic?</h2>
+              <p className="mt-2 text-[13px] leading-6 text-slate-500">
+                This action cannot be undone and will remove the selected clinic.
+              </p>
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-[13px] font-medium text-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 rounded-2xl bg-rose-600 px-4 py-3 text-[13px] font-semibold text-white"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {showEditForm && (
+        <ModalPortal>
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-3xl rounded-[28px] border border-white/60 bg-white p-6 shadow-2xl shadow-slate-400/20">
+              <h2 className="mb-5 font-clinic-heading text-xl font-semibold text-slate-900">Edit Clinic</h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {Object.keys(formData).map((key) => (
+                  <input
+                    key={key}
+                    name={key}
+                    value={formData[key] || ""}
+                    onChange={handleChange}
+                    placeholder={key}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-[13px] outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+                  />
                 ))}
               </div>
-            )}
-          </section>
-        )}
-      </div>
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowEditForm(false)}
+                  className="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-[13px] font-medium text-slate-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateSubmit}
+                  className="flex-1 rounded-2xl bg-gradient-to-r from-sky-600 to-teal-500 px-4 py-3 text-[13px] font-semibold text-white"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
     </div>
   );
 };

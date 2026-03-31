@@ -2,21 +2,35 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile } from "../../redux/userThunk/userThunk";
 import { getAppointments } from "../../redux/appointmentThunk/appointmentThunk";
+import { NavLink } from "react-router-dom";
 
 function MyPatient() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const { appointments, loading } = useSelector((state) => state.appointments);
+  
+  const patients = appointments?.filter(
+    (pat) => pat.doctor._id === user?._id
+  );
+  const uniquePatients = Array.from(
+    new Map(
+      (patients || [])
+        .filter((appt) => appt?.patient?._id) // guard against missing data
+        .map((appt) => [appt.patient._id, appt])
+    ).values()
+  );
+  console.log("Appointments:", appointments);
 
-  // const patients = appointments?.filter(
-  //   (pat) => pat.doctor._id === user?._id
-  // );
 
-  const patients = []
-  useEffect(() => {
+useEffect(() => {
+  if (!user) { 
     dispatch(fetchUserProfile());
+  }
+
+  if (!appointments || appointments.length === 0) { 
     dispatch(getAppointments());
-  }, [dispatch]);
+  }
+}, [dispatch, user, appointments]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
@@ -35,7 +49,7 @@ function MyPatient() {
               </p>
             </div>
             <span className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600">
-              {patients?.length || 0} listed
+              {uniquePatients?.length || 0} listed
             </span>
           </div>
         </header>
@@ -54,9 +68,11 @@ function MyPatient() {
               ))}
             </div>
           </section>
-        ) : patients && patients.length > 0 ? (
+        ) : uniquePatients && uniquePatients.length > 0 ? (
           <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {patients.map((appointment) => (
+          
+            {uniquePatients.map((appointment) => (
+              <NavLink  to={`/myPatients/${appointment.patient._id}`}>
               <article
                 key={appointment._id}
                 className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-lg shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-xl"
@@ -113,6 +129,7 @@ function MyPatient() {
                   </span>
                 </div>
               </article>
+              </NavLink>
             ))}
           </section>
         ) : (

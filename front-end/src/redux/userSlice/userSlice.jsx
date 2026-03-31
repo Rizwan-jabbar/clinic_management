@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUserProfile, loginUser  } from "../userThunk/userThunk";
+import { fetchUserProfile, loginUser } from "../userThunk/userThunk";
+
+const storedUser = localStorage.getItem("user");
+
 const initialState = {
-  user: localStorage.getItem("token") ? {} : null, // agar token hai to user object initialize karo, warna null
-  token: null,
+  user: storedUser ? JSON.parse(storedUser) : null,
+  token: localStorage.getItem("token") || null,
   loading: false,
   error: null,
 };
@@ -16,54 +19,44 @@ const userSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
 
   extraReducers: (builder) => {
     builder
-
-      // 🔵 Login Pending
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-
-      // 🟢 Login Success
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-
-        state.user = action.payload.doctor; // backend se aa raha hai
+        state.user = action.payload.user;
         state.token = action.payload.token;
 
-        // ✅ Token localStorage me save
         localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
-
-      // 🔴 Login Failed
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      
-      // 🟡 Fetch User Profile Pending
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
-
-      // 🟢 Fetch User Profile Success
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.doctor;
+        state.user = action.payload.user;
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
-
-      // 🔴 Fetch User Profile Failed
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      
-      ;
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      });
   },
 });
 

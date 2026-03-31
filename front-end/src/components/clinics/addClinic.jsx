@@ -18,7 +18,6 @@ const AddClinic = () => {
     location: "",
     phone: "",
     description: "",
-    status: "",
     status: "Active",
   });
 

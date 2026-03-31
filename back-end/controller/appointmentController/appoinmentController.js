@@ -1,14 +1,20 @@
 import Appointment from "../../model/appointmentModel/appoinmentModel.js";
+import Assistant from "../../model/assistantModel/assistantModel.js";
 
 const createAppointment = async (req, res) => {
   try {
-    const userId = req.user;
-    const { doctorId, clinicId, appointmentDate } = req.body;
+    const assistantId = req.user;
+    const { doctorId, clinicId, patientId , appointmentDate } = req.body;
 
-   
+
+    const assistant = await Assistant.findById(assistantId);
+    if (!assistant) {
+      return res.status(404).json({ message: "Assistant not found" });
+    }
+
 
     // ✅ Validation
-    if (!doctorId || !clinicId || !appointmentDate) {
+    if (!doctorId || !clinicId || !patientId || !appointmentDate) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -53,9 +59,37 @@ const createAppointment = async (req, res) => {
       return res.status(400).json({ message: "Appointments can only be booked up to 2 weeks in advance" });
     }
 
+
+    // here if patient have appointment on same date with same doctor and clinic then he can not book another appointment
+    const existingAppointment = await Appointment.findOne({
+      patient: patientId,
+      doctor: doctorId,
+      clinic: clinicId,
+    });
+
+    if (existingAppointment && existingAppointment.status === "Pending") {
+      return res.status(400).json({ message: "This uer have already one appointment in pending" });
+    }
+
+
+    // user cannot book appointment for same day
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // start of today
+
+    const appointmentDay = new Date(checkDate);
+    appointmentDay.setHours(0, 0, 0, 0);
+
+    // block same day and past days
+    if (appointmentDay <= today) {
+      return res.status(400).json({
+        message: "You cannot book an appointment for today. Please select a future date.",
+      });
+    }
+
     // ✅ Create appointment (Model name different variable name)
     const newAppointment = new Appointment({
-      patient: userId,
+      assistant: assistantId,
+      patient: patientId,
       doctor: doctorId,
       clinic: clinicId,
       appointmentDate,
@@ -81,6 +115,7 @@ const getAppointments = async (req, res) => {
       .populate("doctor", "name specializations")
       .populate("clinic", "name location")
       .populate("patient", "name email")
+      .populate("assistant", "name email")
       .sort({ appointmentDate: -1 });
 
 

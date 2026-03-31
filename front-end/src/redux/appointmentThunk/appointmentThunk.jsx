@@ -4,20 +4,25 @@ import axios from "axios";
 const BASE_URL =
   import.meta.env.VITE_BASE_URL || "http://localhost:5000/api";
 
+  const getAuthConfig = () => {
+    const token = localStorage.getItem("token");
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  }
+
 export const createAppointment = createAsyncThunk(
   "appointment/create",
-  async (appointmentData, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
 
       const { data } = await axios.post(
         `${BASE_URL}/createAppointment`,
-        appointmentData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        payload,
+        getAuthConfig()
+
       );
 
       return data;
@@ -35,11 +40,7 @@ export const getAppointments = createAsyncThunk(
   "appointment/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.get(`${BASE_URL}/getAppointments`, {
-        headers: {
-          Authorization: `Bearer ${token}`,   
-      },  });
+      const { data } = await axios.get(`${BASE_URL}/getAppointments`, getAuthConfig());
 
       return data.data; // Assuming the API returns { success: true, count: X, data: [...] }
     } catch (error) {
@@ -55,15 +56,10 @@ export const updateAppointmentStatus = createAsyncThunk(
   "appointment/updateStatus",
   async ({ appointmentId, status }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
       const { data } = await axios.patch(
         `${BASE_URL}/updateAppointmentStatus/${appointmentId}`,
         { status },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        getAuthConfig()
       );
       return data.data; // Assuming the API returns { success: true, data: updatedAppointment }
     } catch (error) {

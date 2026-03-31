@@ -58,6 +58,7 @@ const AddDoctor = () => {
     password: "",
     experience: "",
     availability: "",
+    doctorFee: "",
     profilePicture: null,
   });
 
@@ -72,6 +73,7 @@ const AddDoctor = () => {
       password: "",
       experience: "",
       availability: "",
+        doctorFee: "",
       profilePicture: null,
     });
     setPreviewName("");
@@ -189,6 +191,17 @@ const AddDoctor = () => {
               className={sharedInput}
               value={form.experience}
               onChange={(e) => setForm({ ...form, experience: e.target.value })}
+            />
+
+            <input
+              type="number"
+              placeholder="Doctor Fee"
+              min="0"
+              step="0.01"
+              required
+              className={sharedInput}
+              value={form.doctorFee}
+              onChange={(e) => setForm({ ...form, doctorFee: e.target.value })}
             />
 
             <select

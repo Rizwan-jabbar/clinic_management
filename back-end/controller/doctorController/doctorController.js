@@ -12,6 +12,7 @@ const addDoctor = async (req, res) => {
             name,
             specializations,
             qualifications,
+            doctorFee,
             clinic,
             phone,
             email,
@@ -24,9 +25,17 @@ const addDoctor = async (req, res) => {
         const profilePicture = req.file ? req.file.path : null;
 
         // 🔴 Validation
-        if (!name || !phone || !email || !password || !availability || !clinic) {
+        if (!name || !phone || !email || !password || !availability || !clinic || doctorFee === undefined || doctorFee === null || doctorFee === "") {
             return res.status(400).json({
                 message: "Required fields missing"
+            });
+        }
+
+        const normalizedDoctorFee = Number(doctorFee);
+
+        if (!Number.isFinite(normalizedDoctorFee) || normalizedDoctorFee < 0) {
+            return res.status(400).json({
+                message: "Doctor fee must be a valid positive amount"
             });
         }
 
@@ -66,6 +75,7 @@ const addDoctor = async (req, res) => {
             name,
             specializations,
             qualifications,
+            doctorFee: normalizedDoctorFee,
             clinic,
             phone,
             email,
@@ -178,6 +188,8 @@ const deleteDoctor = async (req, res) => {
 
     }
 };
+
+
 
 const doctorController = {
     addDoctor,

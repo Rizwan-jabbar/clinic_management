@@ -13,7 +13,6 @@ function DoctorDetails() {
 
   const { doctors, loading } = useSelector((state) => state.doctors);
   const { user } = useSelector((state) => state.user);
-  const lowerCaseRole = user?.role?.toLowerCase();
 
   const [showMessageModal, setShowMessageModal] = useState(false);
 
@@ -37,7 +36,7 @@ function DoctorDetails() {
 
   if (!doctor) {
     return (
-      <div className="flex h-screen items-center justify-center text-xl text-rose-500">
+      <div className="flex h-screen items-center justify-center text-xl text-red-500">
         Doctor not found
       </div>
     );
@@ -48,99 +47,173 @@ function DoctorDetails() {
     : "https://via.placeholder.com/150";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 px-4 py-10 md:px-10">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        {/* Hero */}
-        <section className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),transparent_55%)]" />
-          <div className="relative flex flex-col gap-6 p-6 md:flex-row md:items-center md:p-8">
-            <div className="mx-auto h-32 w-32 overflow-hidden rounded-3xl border-4 border-white shadow-xl shadow-blue-500/20 md:mx-0">
-              <img
-                src={profilePictureUrl}
-                alt="doctor"
-                className="h-full w-full object-cover"
-              />
-            </div>
+    <div className="min-h-screen bg-slate-100 px-4 py-10 md:px-10">
+      <div className="mx-auto max-w-6xl space-y-6">
 
-            <div className="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-blue-500">
-                Specialist
-              </p>
-              <h1 className="mt-2 text-3xl font-semibold text-slate-900">
-                {doctor.name}
-              </h1>
-              <p className="mt-2 text-sm text-slate-500">
-                {doctor.specializations?.length
-                  ? `🩺 ${doctor.specializations.join(", ")}`
-                  : "🩺 Specialization not provided"}
-              </p>
-              <p className="text-sm text-slate-500">
-                🏥 {doctor.clinic?.name || "No clinic assigned"}
-              </p>
-            </div>
+        {/* PROFILE HEADER */}
 
-            {lowerCaseRole === "admin" && (
-              <button
-                onClick={() => setShowMessageModal(true)}
-                className="mt-4 w-full rounded-2xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700 md:ml-auto md:w-auto"
-              >
-                Message Doctor
-              </button>
-            )}
+        <div className="rounded-3xl bg-white shadow-lg p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center">
+
+          <img
+            src={profilePictureUrl}
+            alt="doctor"
+            className="h-32 w-32 rounded-2xl object-cover shadow"
+          />
+
+          <div className="flex-1 text-center md:text-left">
+
+            <h1 className="text-3xl font-bold text-slate-900">
+              Dr. {doctor.name}
+            </h1>
+
+            <p className="text-slate-500 mt-1">
+              {doctor.specializations?.join(", ")}
+            </p>
+
+            <p className="text-sm text-slate-500 mt-1">
+              🏥 {doctor.clinic?.name || "Clinic not assigned"}
+            </p>
+
+            <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
+
+              <span className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
+                {doctor.experience} Years Experience
+              </span>
+
+              <span className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
+                Available
+              </span>
+
+            </div>
           </div>
-        </section>
 
-        {/* Info grid */}
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoCard title="Experience" icon="🎓">
-            {doctor.experience || 0} Years
-          </InfoCard>
-          <InfoCard title="Email" icon="📧">
-            {doctor.email || "Not provided"}
-          </InfoCard>
-          <InfoCard title="Phone" icon="📞">
-            {doctor.phone || "Not provided"}
-          </InfoCard>
-          <InfoCard title="Availability" icon="📅">
-            {doctor.availability || "Not provided"}
-          </InfoCard>
-        </section>
+          {user?.role?.toLowerCase() === "admin" && (
+            <button
+              onClick={() => setShowMessageModal(true)}
+              className="rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700"
+            >
+              Message Doctor
+            </button>
+          )}
+        </div>
+
+        {/* INFO GRID */}
+
+        <div className="grid gap-6 md:grid-cols-2">
+
+          {/* PROFESSIONAL INFO */}
+
+          <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+
+            <h2 className="text-xl font-semibold text-slate-800">
+              Professional Info
+            </h2>
+
+            <InfoRow label="Experience" value={`${doctor.experience} Years`} />
+            <InfoRow label="Specializations" value={doctor.specializations?.join(", ")} />
+            <InfoRow label="Availability" value={doctor.availability} />
+
+          </div>
+
+          {/* CONTACT INFO */}
+
+          <div className="bg-white rounded-2xl shadow p-6 space-y-4">
+
+            <h2 className="text-xl font-semibold text-slate-800">
+              Contact Information
+            </h2>
+
+            <InfoRow label="Email" value={doctor.email} />
+            <InfoRow label="Phone" value={doctor.phone} />
+            <InfoRow label="Clinic" value={doctor.clinic?.name} />
+
+          </div>
+
+        </div>
+
+        {/* QUALIFICATIONS */}
+
+        <div className="bg-white rounded-2xl shadow p-6">
+
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">
+            Qualifications
+          </h2>
+
+          <div className="flex flex-wrap gap-3">
+
+            {doctor.qualifications?.map((q, i) => (
+              <span
+                key={i}
+                className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium"
+              >
+                {q}
+              </span>
+            ))}
+
+          </div>
+        </div>
+
+        {/* META */}
+
+        <div className="bg-white rounded-2xl shadow p-6">
+
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">
+            Account Info
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-slate-600">
+
+            <div>
+              <span className="font-semibold">Created At:</span>{" "}
+              {new Date(doctor.createdAt).toLocaleDateString()}
+            </div>
+
+            <div>
+              <span className="font-semibold">Doctor ID:</span> {doctor._id}
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      {/* Message modal */}
+      {/* MESSAGE MODAL */}
+
       {showMessageModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6"
+          className="fixed inset-0 flex items-center justify-center bg-black/60 p-4"
           onClick={() => setShowMessageModal(false)}
         >
+
           <div
-            className="relative w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-6 relative"
             onClick={(e) => e.stopPropagation()}
           >
+
             <button
               onClick={() => setShowMessageModal(false)}
-              className="absolute right-5 top-5 rounded-full border border-slate-200 p-2 text-slate-500 transition hover:border-rose-200 hover:text-rose-500"
-              aria-label="Close modal"
+              className="absolute top-4 right-4 text-slate-500"
             >
               ✕
             </button>
+
             <Messages doctorId={doctor._id} />
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
 
-function InfoCard({ title, icon, children }) {
+function InfoRow({ label, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/50">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-        {icon} {title}
-      </p>
-      <p className="mt-2 text-lg font-semibold text-slate-900 break-words">
-        {children}
-      </p>
+    <div className="flex justify-between border-b pb-2">
+      <span className="text-slate-500">{label}</span>
+      <span className="font-medium text-slate-900">{value || "-"}</span>
     </div>
   );
 }

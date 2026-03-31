@@ -1,3 +1,52 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-slate-100 text-slate-800 antialiased;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-image:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(13, 148, 136, 0.08), transparent 26%),
+      linear-gradient(180deg, #f8fbfd 0%, #eef5f7 100%);
+    min-height: 100vh;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 116, 144, 0.35) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(14, 116, 144, 0.25);
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  .font-clinic-heading {
+    font-family: "Trebuchet MS", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .font-clinic-body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
