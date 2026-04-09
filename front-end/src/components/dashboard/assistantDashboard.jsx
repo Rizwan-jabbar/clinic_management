@@ -114,11 +114,11 @@ function AssistantDashboard() {
     <div className="space-y-4 font-clinic-body">
       <section className="rounded-[26px] border border-white/60 bg-white/90 p-4 shadow-lg shadow-slate-200/35 backdrop-blur-xl sm:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-700"><UserCog size={14} />Assistant Dashboard</span>
             <div>
-              <h1 className="font-clinic-heading text-[24px] font-semibold text-slate-900 sm:text-[28px]">Requests, Appointments & Earnings</h1>
-              <p className="mt-1 max-w-3xl text-[12px] leading-5 text-slate-500">Track assistant income share, appointment requests, assigned appointments, and daily coordination work from one focused dashboard.</p>
+              <h1 className="font-clinic-heading break-words text-[24px] font-semibold text-slate-900 sm:text-[28px]">Requests, Appointments & Earnings</h1>
+              <p className="mt-1 max-w-3xl break-words text-[12px] leading-5 text-slate-500">Track assistant income share, appointment requests, assigned appointments, and daily coordination work from one focused dashboard.</p>
             </div>
           </div>
 
@@ -131,10 +131,10 @@ function AssistantDashboard() {
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Assistant Revenue</p><p className="mt-2 text-[21px] font-semibold text-emerald-700">{formatCurrency(periodStats.revenue)}</p></div><span className="rounded-2xl bg-emerald-50 p-2"><Wallet size={16} className="text-emerald-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">2% share from completed doctor appointments in selected window.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Appointment Requests</p><p className="mt-2 text-[21px] font-semibold text-sky-700">{requestStats.total}</p></div><span className="rounded-2xl bg-sky-50 p-2"><ClipboardList size={16} className="text-sky-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">Total requests in selected window.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Appointments</p><p className="mt-2 text-[21px] font-semibold text-teal-700">{periodStats.totalAppointments}</p></div><span className="rounded-2xl bg-teal-50 p-2"><CalendarClock size={16} className="text-teal-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">Assigned appointments for selected period.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Completed</p><p className="mt-2 text-[21px] font-semibold text-slate-900">{overallStats.Completed}</p></div><span className="rounded-2xl bg-slate-100 p-2"><CheckCircle2 size={16} className="text-slate-900" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">Completed appointments overall.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Assistant Revenue</p><p className="mt-2 break-words text-[21px] font-semibold text-emerald-700">{formatCurrency(periodStats.revenue)}</p></div><span className="shrink-0 rounded-2xl bg-emerald-50 p-2"><Wallet size={16} className="text-emerald-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">2% share from completed doctor appointments in selected window.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Appointment Requests</p><p className="mt-2 break-words text-[21px] font-semibold text-sky-700">{requestStats.total}</p></div><span className="shrink-0 rounded-2xl bg-sky-50 p-2"><ClipboardList size={16} className="text-sky-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">Total requests in selected window.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Appointments</p><p className="mt-2 break-words text-[21px] font-semibold text-teal-700">{periodStats.totalAppointments}</p></div><span className="shrink-0 rounded-2xl bg-teal-50 p-2"><CalendarClock size={16} className="text-teal-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">Assigned appointments for selected period.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Completed</p><p className="mt-2 break-words text-[21px] font-semibold text-slate-900">{overallStats.Completed}</p></div><span className="shrink-0 rounded-2xl bg-slate-100 p-2"><CheckCircle2 size={16} className="text-slate-900" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">Completed appointments overall.</p></div>
           </div>
 
           <div className="rounded-[22px] bg-gradient-to-r from-sky-600 to-teal-500 p-4 text-white shadow-lg shadow-sky-500/20">
@@ -177,10 +177,10 @@ function AssistantDashboard() {
             {assistantLinks.map((item) => {
               const Icon = item.icon;
               return (
-                <NavLink key={item.to} to={item.to} className="rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <NavLink key={item.to} to={item.to} className="min-w-0 overflow-hidden rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                   <div className="inline-flex rounded-2xl bg-sky-50 p-3 text-sky-700"><Icon size={18} /></div>
-                  <h2 className="mt-3 text-base font-semibold text-slate-900">{item.label}</h2>
-                  <p className="mt-1 text-[11px] leading-5 text-slate-500">Open this section to keep appointment flow smooth and patient requests organized.</p>
+                  <h2 className="mt-3 break-words text-base font-semibold text-slate-900">{item.label}</h2>
+                  <p className="mt-1 break-words text-[11px] leading-5 text-slate-500">Open this section to keep appointment flow smooth and patient requests organized.</p>
                 </NavLink>
               );
             })}

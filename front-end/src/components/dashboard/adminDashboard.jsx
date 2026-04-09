@@ -450,14 +450,14 @@ function AdminDashboard() {
     <div className="space-y-4 font-clinic-body">
       <section className="rounded-[26px] border border-white/60 bg-white/90 p-4 shadow-lg shadow-slate-200/35 backdrop-blur-xl sm:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-700">
               <FileBarChart2 size={14} />
               Admin Dashboard
             </span>
             <div>
-              <h1 className="font-clinic-heading text-[24px] font-semibold text-slate-900 sm:text-[28px]">Revenue, Records & Platform Control</h1>
-              <p className="mt-1 max-w-3xl text-[12px] leading-5 text-slate-500">Review pharmacy income, doctor income, combined admin earnings, and platform-wide operational data from one complete control panel.</p>
+              <h1 className="font-clinic-heading break-words text-[24px] font-semibold text-slate-900 sm:text-[28px]">Revenue, Records & Platform Control</h1>
+              <p className="mt-1 max-w-3xl break-words text-[12px] leading-5 text-slate-500">Review pharmacy income, doctor income, combined admin earnings, and platform-wide operational data from one complete control panel.</p>
             </div>
           </div>
 
@@ -472,10 +472,10 @@ function AdminDashboard() {
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Combined Admin Income</p><p className="mt-2 text-[21px] font-semibold text-emerald-700">{formatCurrency(combinedAdminIncome)}</p></div><span className="rounded-2xl bg-emerald-50 p-2"><Wallet size={16} className="text-emerald-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">Pharmacy and doctor admin shares combined.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Pharmacy Income</p><p className="mt-2 text-[21px] font-semibold text-sky-700">{formatCurrency(pharmacyTotals.adminIncome)}</p></div><span className="rounded-2xl bg-sky-50 p-2"><BadgeDollarSign size={16} className="text-sky-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">5% admin share from delivered pharmacy profit.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Doctor Income</p><p className="mt-2 text-[21px] font-semibold text-teal-700">{formatCurrency(doctorTotals.adminIncome)}</p></div><span className="rounded-2xl bg-teal-50 p-2"><Stethoscope size={16} className="text-teal-700" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">3% admin share from completed doctor appointments.</p></div>
-            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Platform Revenue</p><p className="mt-2 text-[21px] font-semibold text-slate-900">{formatCurrency(combinedOperationalRevenue)}</p></div><span className="rounded-2xl bg-slate-100 p-2"><TrendingUp size={16} className="text-slate-900" /></span></div><p className="mt-2 text-[11px] leading-5 text-slate-500">Selling volume and doctor fees combined for selected period.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Combined Admin Income</p><p className="mt-2 break-words text-[21px] font-semibold text-emerald-700">{formatCurrency(combinedAdminIncome)}</p></div><span className="shrink-0 rounded-2xl bg-emerald-50 p-2"><Wallet size={16} className="text-emerald-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">Pharmacy and doctor admin shares combined.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Pharmacy Income</p><p className="mt-2 break-words text-[21px] font-semibold text-sky-700">{formatCurrency(pharmacyTotals.adminIncome)}</p></div><span className="shrink-0 rounded-2xl bg-sky-50 p-2"><BadgeDollarSign size={16} className="text-sky-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">5% admin share from delivered pharmacy profit.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Doctor Income</p><p className="mt-2 break-words text-[21px] font-semibold text-teal-700">{formatCurrency(doctorTotals.adminIncome)}</p></div><span className="shrink-0 rounded-2xl bg-teal-50 p-2"><Stethoscope size={16} className="text-teal-700" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">3% admin share from completed doctor appointments.</p></div>
+            <div className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">Platform Revenue</p><p className="mt-2 break-words text-[21px] font-semibold text-slate-900">{formatCurrency(combinedOperationalRevenue)}</p></div><span className="shrink-0 rounded-2xl bg-slate-100 p-2"><TrendingUp size={16} className="text-slate-900" /></span></div><p className="mt-2 break-words text-[11px] leading-5 text-slate-500">Selling volume and doctor fees combined for selected period.</p></div>
           </div>
 
           <div className="rounded-[22px] bg-gradient-to-r from-sky-600 to-teal-500 p-4 text-white shadow-lg shadow-sky-500/20">
@@ -504,15 +504,15 @@ function AdminDashboard() {
             <p className="mt-1 text-[12px] text-slate-500">Switch between combined, pharmacy-only, and doctor-only revenue views. You can also inspect a specific pharmacy or doctor.</p>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            <select value={revenueView} onChange={(e) => setRevenueView(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700">
+          <div className="grid w-full gap-2 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
+            <select value={revenueView} onChange={(e) => setRevenueView(e.target.value)} className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700">
               {revenueViews.map((item) => (<option key={item.id} value={item.id}>{item.label}</option>))}
             </select>
-            <select value={selectedPharmacyId} onChange={(e) => setSelectedPharmacyId(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700" disabled={revenueView === "doctor"}>
+            <select value={selectedPharmacyId} onChange={(e) => setSelectedPharmacyId(e.target.value)} className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700" disabled={revenueView === "doctor"}>
               <option value="all">All Pharmacies</option>
               {pharmacies.map((item) => (<option key={item._id} value={item._id}>{item.pharmacyName}</option>))}
             </select>
-            <select value={selectedDoctorId} onChange={(e) => setSelectedDoctorId(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700" disabled={revenueView === "pharmacy"}>
+            <select value={selectedDoctorId} onChange={(e) => setSelectedDoctorId(e.target.value)} className="min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700" disabled={revenueView === "pharmacy"}>
               <option value="all">All Doctors</option>
               {doctors.map((item) => (<option key={item._id} value={item._id}>{item.name}</option>))}
             </select>
@@ -524,9 +524,9 @@ function AdminDashboard() {
         <div className="space-y-4">
           <div className="rounded-[24px] border border-white/60 bg-white/90 p-4 shadow-lg shadow-slate-200/30">
             <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">{revenueView === "doctor" ? "Doctor Revenue Records" : "Pharmacy Revenue Records"}</h2>
-                <p className="mt-1 text-[12px] text-slate-500">{revenueView === "doctor" ? "Doctor performance and admin income from completed appointments." : "Pharmacy delivered-order revenue, gross profit, and admin income records."}</p>
+              <div className="min-w-0">
+                <h2 className="break-words text-lg font-semibold text-slate-900">{revenueView === "doctor" ? "Doctor Revenue Records" : "Pharmacy Revenue Records"}</h2>
+                <p className="mt-1 break-words text-[12px] text-slate-500">{revenueView === "doctor" ? "Doctor performance and admin income from completed appointments." : "Pharmacy delivered-order revenue, gross profit, and admin income records."}</p>
               </div>
               <span className="rounded-full bg-sky-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-700">{topRows.length} records</span>
             </div>
@@ -542,7 +542,7 @@ function AdminDashboard() {
                         <p className="text-[12px] font-semibold text-slate-900">{row.name}</p>
                         <p className="mt-1 text-[10px] text-slate-500">{revenueView === "doctor" ? `${row.totalAppointments} appointments / ${row.completedAppointments} completed` : `${row.orderCount} orders / ${row.itemsSold} items sold`}</p>
                       </div>
-                      <p className="text-[12px] font-semibold text-emerald-700">{formatCurrency(row.adminIncome)}</p>
+                      <p className="shrink-0 text-[12px] font-semibold text-emerald-700">{formatCurrency(row.adminIncome)}</p>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-slate-500">
                       <span className="rounded-full bg-white px-2.5 py-1">{revenueView === "doctor" ? `Revenue ${formatCurrency(row.grossRevenue)}` : `Selling ${formatCurrency(row.totalSelling)}`}</span>
@@ -558,10 +558,10 @@ function AdminDashboard() {
             {adminLinks.map((item) => {
               const Icon = item.icon;
               return (
-                <NavLink key={item.to} to={item.to} className="rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <NavLink key={item.to} to={item.to} className="min-w-0 overflow-hidden rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                   <div className="inline-flex rounded-2xl bg-sky-50 p-3 text-sky-700"><Icon size={18} /></div>
-                  <h2 className="mt-3 text-base font-semibold text-slate-900">{item.label}</h2>
-                  <p className="mt-1 text-[11px] leading-5 text-slate-500">Open this section to review records and keep daily operations under control.</p>
+                  <h2 className="mt-3 break-words text-base font-semibold text-slate-900">{item.label}</h2>
+                  <p className="mt-1 break-words text-[11px] leading-5 text-slate-500">Open this section to review records and keep daily operations under control.</p>
                 </NavLink>
               );
             })}

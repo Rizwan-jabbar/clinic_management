@@ -253,16 +253,16 @@ function DoctorDashboard() {
     <div className="space-y-4 font-clinic-body">
       <section className="rounded-[26px] border border-white/60 bg-white/90 p-4 shadow-lg shadow-slate-200/35 backdrop-blur-xl sm:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-sky-700">
               <TrendingUp size={14} />
               Doctor Dashboard
             </span>
             <div>
-              <h1 className="font-clinic-heading text-[24px] font-semibold text-slate-900 sm:text-[28px]">
+              <h1 className="font-clinic-heading break-words text-[24px] font-semibold text-slate-900 sm:text-[28px]">
                 Appointments, Revenue & Patients
               </h1>
-              <p className="mt-1 max-w-2xl text-[12px] leading-5 text-slate-500">
+              <p className="mt-1 max-w-2xl break-words text-[12px] leading-5 text-slate-500">
                 Track consultation earnings, patient load, appointment status, and quick doctor actions from one professional dashboard.
               </p>
             </div>
@@ -297,17 +297,17 @@ function DoctorDashboard() {
                   className="rounded-[22px] border border-slate-100 bg-white px-4 py-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                    <div className="min-w-0">
+                      <p className="break-words text-[10px] uppercase tracking-[0.18em] text-slate-400">
                         {card.label}
                       </p>
-                      <p className={`mt-2 text-[21px] font-semibold ${card.tone}`}>{card.value}</p>
+                      <p className={`mt-2 break-words text-[21px] font-semibold ${card.tone}`}>{card.value}</p>
                     </div>
-                    <span className={`rounded-2xl p-2 ${card.bg}`}>
+                    <span className={`shrink-0 rounded-2xl p-2 ${card.bg}`}>
                       <Icon size={16} className={card.tone} />
                     </span>
                   </div>
-                  <p className="mt-2 text-[11px] leading-5 text-slate-500">{card.note}</p>
+                  <p className="mt-2 break-words text-[11px] leading-5 text-slate-500">{card.note}</p>
                 </div>
               );
             })}
@@ -457,13 +457,13 @@ function DoctorDashboard() {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className="rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="min-w-0 overflow-hidden rounded-[22px] border border-white/70 bg-white/90 p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="inline-flex rounded-2xl bg-sky-50 p-3 text-sky-700">
                     <Icon size={18} />
                   </div>
-                  <h2 className="mt-3 text-base font-semibold text-slate-900">{item.label}</h2>
-                  <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                  <h2 className="mt-3 break-words text-base font-semibold text-slate-900">{item.label}</h2>
+                  <p className="mt-1 break-words text-[11px] leading-5 text-slate-500">
                     Open this section to continue doctor workflow with less navigation overhead.
                   </p>
                 </NavLink>

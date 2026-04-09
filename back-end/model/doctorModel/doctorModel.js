@@ -40,7 +40,7 @@ const doctorSchema = new mongoose.Schema({
             "BAMS",
             "BHMS"
         ]
-    },
+    },    
 
     doctorFee: {
         type: Number,
