@@ -113,9 +113,14 @@ const getAllMedicines = async (req, res) => {
   try {
     const medicines = await Medicine.find().populate(
       "addedBy",
-      "pharmacyName address"
+      "pharmacyName address status"
     );
-    res.status(200).json(medicines);
+
+    const activePharmacyMedicines = medicines.filter(
+      (medicine) => medicine?.addedBy?.status === "active"
+    );
+
+    res.status(200).json(activePharmacyMedicines);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

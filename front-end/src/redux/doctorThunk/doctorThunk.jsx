@@ -70,7 +70,7 @@ export const deleteDoctor = createAsyncThunk(
     try {
       await axios.delete(`${BASE_URL}/deleteDoctor/${doctorId}`, getAuthConfig());
 
-      return doctorId; // Return deleted doctor id for redux state update
+      return { doctorId, serviceStatus: "deactivated", doctorStatus: "inactive" };
     } catch (error) {
       return rejectWithValue(
         error?.response?.data?.message ||
@@ -79,4 +79,62 @@ export const deleteDoctor = createAsyncThunk(
       );
     }
   }
+);
+
+
+export const updateDoctorStatus = createAsyncThunk(
+    "updateDoctorStatus",
+    async ({ doctorId, status }, { rejectWithValue }) => {
+        try {
+            await axios.patch(`${BASE_URL}/updateDoctorStatus/${doctorId}`, {
+                status,
+            }, getAuthConfig());
+            return { doctorId, status };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to update doctor status"
+            );
+        } 
+    }
+);
+
+
+export const undoDeleteDoctor = createAsyncThunk(
+    "undoDeleteDoctor",
+    async (doctorId, { rejectWithValue }) => {
+        try {
+            await axios.put(`${BASE_URL}/undoDeleteDoctor/${doctorId}`, {}, getAuthConfig());
+            return { doctorId, serviceStatus: "activated", doctorStatus: "active" };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to undo delete doctor"
+            );  
+          }
+        }
+
+      );
+
+
+
+export const updateDoctorDetails = createAsyncThunk(
+    "updateDoctorDetails",
+    async ({ doctorId, doctorData }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(
+                `${BASE_URL}/updateDoctor/${doctorId}`,
+                doctorData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            return response.data.doctor; 
+        } catch (error) { 
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to update doctor details"
+            );
+        }
+    }
 );

@@ -39,10 +39,89 @@ export const getPharmacies = createAsyncThunk(
         headers: getAuthHeaders(),
       });
 
-      return data.data;
+      return data?.data || data?.pharmacies || [];
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Get Pharmacies Failed"
+        error?.response?.data?.message || error.message || "Get Pharmacies Failed"
+      );
+    }
+  }
+);
+
+export const deletePharmacy = createAsyncThunk(
+  "deletePharmacy",
+  async (pharmacyId, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${BASE_URL}/deletePharmacy/${pharmacyId}`, {
+        headers: getAuthHeaders(),
+      });
+
+      return { pharmacyId, serviceStatus: "deactivated", status: "inactive" };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Delete Pharmacy Failed"
+      );
+    }
+  }
+);
+
+export const updatePharmacyStatus = createAsyncThunk(
+    "updatePharmacyStatus",
+    async ({ pharmacyId, status }, { rejectWithValue }) => {
+        try {
+            await axios.patch(`${BASE_URL}/updatePharmacyStatus/${pharmacyId}`, { status }, {
+                headers: getAuthHeaders(),
+            });
+
+            return { pharmacyId, status };
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Update Pharmacy Status Failed"
+            );
+        } 
+      }
+);
+
+export const undoDeletePharmacy = createAsyncThunk(
+  "undoDeletePharmacy",
+  async (pharmacyId, { rejectWithValue }) => {
+    try {
+      await axios.put(
+        `${BASE_URL}/undoDeletePharmacy/${pharmacyId}`,
+        {},
+        {
+          headers: getAuthHeaders(),
+        }
+      );
+
+      return { pharmacyId, serviceStatus: "activated", status: "active" };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Undo Delete Pharmacy Failed"
+      );
+    }
+  }
+);
+
+export const updatePharmacyDetails = createAsyncThunk(
+  "updatePharmacyDetails",
+  async ({ pharmacyId, pharmacyData }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.put(
+        `${BASE_URL}/updatePharmacy/${pharmacyId}`,
+        pharmacyData,
+        {
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return data.pharmacy;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Update Pharmacy Details Failed"
       );
     }
   }

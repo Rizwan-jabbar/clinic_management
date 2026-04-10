@@ -27,7 +27,12 @@ const assistantSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Clinic',
         required: true
-    }
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active'
+    },
 }, { timestamps: true });
 
 

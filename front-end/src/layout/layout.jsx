@@ -23,7 +23,7 @@ const Layout = () => {
 
       <div
         className={`relative flex min-h-screen min-w-0 flex-col transition-[padding] duration-300 ${
-          isCollapsed ? "lg:pl-24" : "lg:pl-[286px]"
+          isCollapsed ? "lg:pl-20" : "lg:pl-[264px]"
         }`}
       >
         <Header
@@ -32,8 +32,8 @@ const Layout = () => {
           setIsCollapsed={setIsCollapsed}
         />
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
-          <div className="mx-auto min-w-0 max-w-7xl">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-3 sm:px-5 lg:px-6 lg:py-5">
+          <div className="mx-auto min-w-0 max-w-[1380px]">
             <Outlet />
           </div>
         </main>

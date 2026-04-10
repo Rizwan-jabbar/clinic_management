@@ -61,19 +61,19 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "U";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/60 bg-white/75 shadow-sm shadow-slate-200/50 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[76px] min-w-0 max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/88 shadow-sm shadow-slate-200/35 backdrop-blur-md">
+      <div className="mx-auto flex min-h-[68px] min-w-0 max-w-[1380px] items-center justify-between gap-3 px-3 py-2.5 sm:px-5 lg:px-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700 md:hidden"
           >
             <Menu size={18} />
           </button>
 
           <button
             onClick={() => setIsCollapsed((prev) => !prev)}
-            className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700 lg:inline-flex"
+            className="hidden h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700 lg:inline-flex"
           >
             {isCollapsed ? (
               <PanelLeftOpen size={18} />
@@ -83,7 +83,7 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
           </button>
 
           <div className="flex min-w-0 items-center gap-3">
-            <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-teal-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/25 sm:flex">
+            <div className="hidden h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-600 to-teal-500 text-sm font-semibold text-white shadow-md shadow-sky-500/20 sm:flex">
               CM
             </div>
 
@@ -92,10 +92,10 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
                 Clinic Dashboard
               </p>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-lg font-semibold text-slate-900">
+                <h1 className="truncate text-base font-semibold text-slate-900 sm:text-lg">
                   Welcome back, {user?.name?.split(" ")[0] || "User"}
                 </h1>
-                <span className="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-700">
+                <span className="rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-700">
                   {roleLabel}
                 </span>
               </div>
@@ -104,7 +104,7 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
         </div>
 
         <div className="flex min-w-0 items-center gap-3">
-          <div className="hidden min-w-0 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm xl:flex xl:items-center xl:gap-3">
+          <div className="hidden min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm xl:flex xl:items-center xl:gap-3">
             <div className="rounded-xl bg-sky-50 p-2 text-sky-700">
               <CalendarRange size={16} />
             </div>
@@ -121,7 +121,7 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
           {roleLabel === "user" && (
             <button
               onClick={() => navigate("/myCart")}
-              className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
             >
               <ShoppingCart size={18} />
               {cartCount > 0 && (
@@ -135,7 +135,7 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
           <div className="relative">
             <button
               onClick={() => setNotificationOpen((prev) => !prev)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-sky-200 hover:text-sky-700"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
@@ -191,14 +191,14 @@ const Header = ({ setIsOpen, isCollapsed, setIsCollapsed }) => {
           <div className="relative">
             <button
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:border-sky-200"
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm transition hover:border-sky-200"
             >
               <div className="hidden text-right sm:block">
                 <p className="font-semibold text-slate-800">{user?.name || "User"}</p>
                 <p className="text-xs text-slate-500">Manage your account</p>
               </div>
 
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-teal-500 font-semibold text-white shadow-md shadow-sky-500/20">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-600 to-teal-500 font-semibold text-white shadow-sm shadow-sky-500/20">
                 {initials}
               </div>
               <ChevronDown size={16} className="hidden text-slate-400 sm:block" />

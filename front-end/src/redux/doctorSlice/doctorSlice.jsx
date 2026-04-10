@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addDoctor, getDoctors , deleteDoctor } from "../doctorThunk/doctorThunk";
+import { addDoctor, getDoctors , deleteDoctor , updateDoctorStatus  , undoDeleteDoctor , updateDoctorDetails} from "../doctorThunk/doctorThunk";
 const doctorSlice = createSlice({
     name: "doctor",
     initialState: {
@@ -49,10 +49,41 @@ const doctorSlice = createSlice({
                 state.error = action.payload || "Failed to fetch doctors";
             })
             .addCase(deleteDoctor.fulfilled, (state, action) => {
-                state.doctors = state.doctors.filter(doctor => doctor._id !== action.payload);
+                const { doctorId, serviceStatus, doctorStatus } = action.payload;
+                const doctor = state.doctors.find((item) => item._id === doctorId);
+                if (doctor) {
+                    doctor.serviceStatus = serviceStatus;
+                    doctor.doctorStatus = doctorStatus;
+                }
             })
             .addCase(deleteDoctor.rejected, (state, action) => {
                 state.error = action.payload || "Failed to delete doctor";
+            }).addCase(updateDoctorStatus.fulfilled, (state, action) => {
+                const { doctorId, status } = action.payload;
+                const doctorIndex = state.doctors.findIndex(doctor => doctor._id === doctorId);
+                if (doctorIndex !== -1) {
+                    state.doctors[doctorIndex].doctorStatus = status;
+                }
+            }).addCase(updateDoctorStatus.rejected, (state, action) => {
+                state.error = action.payload || "Failed to update doctor status";
+            }).addCase(undoDeleteDoctor.fulfilled, (state, action) => {
+                const { doctorId, serviceStatus, doctorStatus } = action.payload;
+                const doctor = state.doctors.find(doctor => doctor._id === doctorId);
+                if (doctor) {
+                    doctor.isDeleted = false;
+                    doctor.serviceStatus = serviceStatus;
+                    doctor.doctorStatus = doctorStatus;
+                }
+            }).addCase(undoDeleteDoctor.rejected, (state, action) => {
+                state.error = action.payload || "Failed to undo delete doctor";
+            }).addCase(updateDoctorDetails.fulfilled, (state, action) => {
+                const updatedDoctor = action.payload;
+                const doctorIndex = state.doctors.findIndex(doctor => doctor._id === updatedDoctor._id);
+                if (doctorIndex !== -1) {
+                    state.doctors[doctorIndex] = updatedDoctor;
+                }
+            }).addCase(updateDoctorDetails.rejected, (state, action) => {
+                state.error = action.payload || "Failed to update doctor details";
             });
     }
 });

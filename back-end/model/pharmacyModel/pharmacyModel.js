@@ -140,6 +140,16 @@ const pharmacySchema = new mongoose.Schema(
         notes: {
             type: String,
         },
+
+        status: {
+            type: String,
+            enum: ["active", "inactive"],
+            default: "active",
+        },
+        serviceStatus: {
+            type: String,
+            default: "activated",
+        },
     },
     {
         timestamps: true, // createdAt, updatedAt

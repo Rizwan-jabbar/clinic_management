@@ -33,6 +33,8 @@ import MyOrders from "./components/orders/myOrders";
 import PharmacyOrders from "./components/orders/pharmacyOrders";
 import AllOrders from "./components/orders/allOrders";
 import DashboardRouter from "./components/dashboard/dashboardRouter";
+import Payments from "./components/payments/payments";
+import AddPayment from "./components/payments/addPayment";
 
 function App() {
   const dispatch = useDispatch();
@@ -91,6 +93,8 @@ function App() {
           <Route path="myOrders" element={<MyOrders />} />
           <Route path="pharmacy/orders" element={<PharmacyOrders />} />
           <Route path="admin/orders" element={<AllOrders />} />
+          <Route path = 'payments' element={<Payments />} />
+          <Route path = 'addPayment' element={<AddPayment />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       )}

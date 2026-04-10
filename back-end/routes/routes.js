@@ -18,6 +18,7 @@ import cartController from '../controller/cartController/cartController.js';
 import pharmacyController from '../controller/pharmacyController/pharmacyController.js';
 import uploadPharmacyImage from '../middleWare/imageUpload/imageUpload.js';
 import orderController from '../controller/orderController/orderController.js';
+import paymentController from '../controller/paymentController/paymentController.js';
 const router = express.Router()
 
 
@@ -33,6 +34,10 @@ router.put('/updateClinic/:id', authMiddleware, roleMiddleware('admin'), clinicC
 router.post('/addDoctor', authMiddleware, roleMiddleware('admin'), uploadDoctorImage.single("profilePicture"), doctorController.addDoctor);
 router.get('/getDoctors', authMiddleware, doctorController.getDoctors);
 router.delete('/deleteDoctor/:id', authMiddleware, roleMiddleware('admin'), doctorController.deleteDoctor);
+router.patch('/updateDoctorStatus/:id', authMiddleware, roleMiddleware('admin'), doctorController.updateDoctorStatus);
+router.put('/undoDeleteDoctor/:id', authMiddleware, roleMiddleware('admin'), doctorController.undoDoctorDeletion);
+router.put('/updateDoctor/:id', authMiddleware, roleMiddleware('admin'), uploadDoctorImage.single("profilePicture"), doctorController.updateDoctorDetails);
+
 
 // login routes
 router.post('/login', loginController.loginUser);
@@ -104,7 +109,10 @@ router.delete('/clearMyCart', authMiddleware, roleMiddleware('user'), cartContro
 // pharmacy routes
 router.post('/addPharmacy', authMiddleware, roleMiddleware('admin' ) , uploadPharmacyImage.single("logo"), pharmacyController.addPharmacy);
 router.get('/getPharmacies', authMiddleware, roleMiddleware('admin'), pharmacyController.getPharmacy);
-
+router.delete('/deletePharmacy/:id', authMiddleware, roleMiddleware('admin'), pharmacyController.deletePharmacy);
+router.patch('/updatePharmacyStatus/:id', authMiddleware, roleMiddleware('admin'), pharmacyController.updatePharmacyStatus);
+router.put('/undoDeletePharmacy/:id', authMiddleware, roleMiddleware('admin'), pharmacyController.undoPharmacyDeletion);
+router.put('/updatePharmacy/:id', authMiddleware, roleMiddleware('admin'), uploadPharmacyImage.single("logo"), pharmacyController.updatePharmacyDetails);
 
 
 // order routes
@@ -115,6 +123,9 @@ router.get('/getAllOrders', authMiddleware, roleMiddleware('admin'), orderContro
 router.patch('/updateOrderStatus/:orderId', authMiddleware, roleMiddleware('pharmacy'), orderController.updateOrderStatus);
 router.patch('/cancelOrder/:orderId', authMiddleware, roleMiddleware('user'), orderController.cancelOrder);
 
+
+// payment routes
+router.post('/updatePayment/:doctorId', authMiddleware, roleMiddleware('admin'), paymentController.updatePaymet);
 
 router.get('/getMessages/:doctorId', authMiddleware, messageController.getMessages);
 export default router;

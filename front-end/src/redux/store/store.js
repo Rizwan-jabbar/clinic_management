@@ -13,6 +13,7 @@ import medicineReducer from "../medicineSlice/medicineSlice";
 import cartReducer from "../cartSlice/cartSlice";
 import pharmacyReducer from "../pharmcySlice/pharmacySlice";
 import orderReducer from "../orderSlice/orderSlice";
+import paymentReducer from "../paymentSlice/paymentSlice";
 export const store = configureStore({
   reducer: {
     clinics: ClinicReducer,
@@ -29,5 +30,6 @@ export const store = configureStore({
     cart: cartReducer,
     pharmacy: pharmacyReducer,
     order: orderReducer,
+    payment: paymentReducer,
   },
 });

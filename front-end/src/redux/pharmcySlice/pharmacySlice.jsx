@@ -1,5 +1,12 @@
 ﻿import { createSlice } from "@reduxjs/toolkit";
-import { addPharmacy, getPharmacies } from "../pharmacyThunk/pharmacyThunk";
+import {
+  addPharmacy,
+  getPharmacies,
+  deletePharmacy,
+  updatePharmacyStatus,
+  undoDeletePharmacy,
+  updatePharmacyDetails,
+} from "../pharmacyThunk/pharmacyThunk";
 
 const pharmacySlice = createSlice({
   name: "pharmacy",
@@ -51,6 +58,56 @@ const pharmacySlice = createSlice({
       .addCase(getPharmacies.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Get Pharmacies Failed";
+      })
+      .addCase(deletePharmacy.fulfilled, (state, action) => {
+        const { pharmacyId, serviceStatus, status } = action.payload;
+        const pharmacy = state.pharmacies.find((item) => item._id === pharmacyId);
+        if (pharmacy) {
+          pharmacy.serviceStatus = serviceStatus;
+          pharmacy.status = status;
+          pharmacy.pharmacyStatus = status;
+        }
+      })
+      .addCase(deletePharmacy.rejected, (state, action) => {
+        state.error = action.payload || "Delete Pharmacy Failed";
+      })
+      .addCase(updatePharmacyStatus.fulfilled, (state, action) => {
+        const { pharmacyId, status } = action.payload;
+        const index = state.pharmacies.findIndex((pharmacy) => pharmacy._id === pharmacyId);
+        if (index !== -1) {
+          state.pharmacies[index].status = status;
+          state.pharmacies[index].pharmacyStatus = status;
+        }
+        state.message = "Pharmacy status updated successfully";
+        state.error = null;
+        state.success = true;
+      })
+      .addCase(updatePharmacyStatus.rejected, (state, action) => {
+        state.error = action.payload || "Update Pharmacy Status Failed";
+        state.message = null;
+        state.success = false;
+      })
+      .addCase(undoDeletePharmacy.fulfilled, (state, action) => {
+        const { pharmacyId, serviceStatus, status } = action.payload;
+        const pharmacy = state.pharmacies.find((item) => item._id === pharmacyId);
+        if (pharmacy) {
+          pharmacy.serviceStatus = serviceStatus;
+          pharmacy.status = status;
+          pharmacy.pharmacyStatus = status;
+        }
+      })
+      .addCase(undoDeletePharmacy.rejected, (state, action) => {
+        state.error = action.payload || "Undo Delete Pharmacy Failed";
+      })
+      .addCase(updatePharmacyDetails.fulfilled, (state, action) => {
+        const updatedPharmacy = action.payload;
+        const index = state.pharmacies.findIndex((pharmacy) => pharmacy._id === updatedPharmacy._id);
+        if (index !== -1) {
+          state.pharmacies[index] = updatedPharmacy;
+        }
+      })
+      .addCase(updatePharmacyDetails.rejected, (state, action) => {
+        state.error = action.payload || "Update Pharmacy Details Failed";
       });
   },
 });

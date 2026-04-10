@@ -11,6 +11,7 @@ import { fetchUserProfile } from "../../redux/userThunk/userThunk";
 import { createPortal } from "react-dom";
 import {
   Building2,
+  ChevronDown,
   Clock3,
   MapPin,
   Phone,
@@ -36,6 +37,7 @@ const ClinicList = () => {
   const isAdmin = user?.role?.toLowerCase() === "admin";
 
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState(null);
@@ -47,12 +49,16 @@ const ClinicList = () => {
   }, [dispatch]);
 
   const filteredClinics = useMemo(() => {
-    return search
-      ? clinics?.filter((clinic) =>
-          clinic?.name?.toLowerCase().includes(search.toLowerCase())
-        )
-      : clinics;
-  }, [clinics, search]);
+    return (clinics || []).filter((clinic) => {
+      const matchesSearch = search
+        ? clinic?.name?.toLowerCase().includes(search.toLowerCase())
+        : true;
+      const matchesStatus =
+        statusFilter === "All" || clinic?.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [clinics, search, statusFilter]);
 
   const openEditModal = (clinic) => {
     setSelectedClinic(clinic);
@@ -163,18 +169,36 @@ const ClinicList = () => {
       </section>
 
       <section className="rounded-[32px] border border-white/60 bg-white/85 p-5 shadow-xl shadow-slate-200/40 backdrop-blur-xl sm:p-6">
-        <div className="relative">
-          <Search
-            size={17}
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder="Search clinic"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-[13px] text-slate-700 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
-          />
+        <div className="flex flex-col gap-4 lg:flex-row">
+          <div className="relative flex-1">
+            <Search
+              size={17}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="text"
+              placeholder="Search clinic"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-[13px] text-slate-700 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            />
+          </div>
+
+          <div className="relative min-w-[210px]">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-4 pr-10 text-[13px] text-slate-700 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            >
+              <option value="All">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <ChevronDown
+              size={16}
+              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+          </div>
         </div>
       </section>
 

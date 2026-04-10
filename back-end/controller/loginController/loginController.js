@@ -10,7 +10,18 @@ const adminUser = {
     name: "Admin",
     email: "admin@clinic.com",
     password: "admin123",
-    role: "admin"
+    role: "admin",
+    status: "active",
+};
+
+const resolveUserStatus = (user) => {
+    return String(
+        user?.status ??
+        user?.doctorStatus ??
+        user?.pharmacyStatus ??
+        user?.Status ??
+        "active"
+    ).toLowerCase();
 };
 
 /**
@@ -51,6 +62,8 @@ const loginUser = async (req, res) => {
         let user = await Doctor.findOne({ email });
         let role = "doctor";
 
+       
+
         if (!user) {
             user = await Assistant.findOne({ email });
             role = "assistant";
@@ -77,6 +90,14 @@ const loginUser = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({
                 message: "Invalid password"
+            });
+        }
+
+        const currentStatus = resolveUserStatus(user);
+
+        if (currentStatus !== "active") {
+            return res.status(403).json({
+                message: "Account is inactive. Please contact support."
             });
         }
 

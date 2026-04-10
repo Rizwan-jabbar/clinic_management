@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/cartThunk/cartThunk";
 import { getAllMedicines } from "../../redux/medicineThunk/medicineThunk";
 import {
+  ChevronDown,
   MapPin,
   Package2,
   Search,
@@ -26,6 +27,8 @@ function AllMedicine() {
   } = useSelector((state) => state.cart);
 
   const [search, setSearch] = useState("");
+  const [stockFilter, setStockFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const userRole = user?.role?.toLowerCase() || "";
   const canAddToCart = userRole === "patient" || userRole === "user";
 
@@ -37,15 +40,22 @@ function AllMedicine() {
     const searchValue = search.trim().toLowerCase();
 
     return medicines.filter((medicine) => {
-      if (!searchValue) {
-        return true;
-      }
+      const matchesSearch =
+        !searchValue ||
+        [medicine.name, medicine.brand, medicine.manufacturer, medicine.pharmacyName]
+          .filter(Boolean)
+          .some((value) => value.toLowerCase().includes(searchValue));
+      const matchesStock =
+        stockFilter === "all" ||
+        (stockFilter === "in-stock" && Number(medicine.stock || 0) > 0) ||
+        (stockFilter === "out-of-stock" && Number(medicine.stock || 0) === 0);
+      const matchesCategory =
+        categoryFilter === "all" ||
+        String(medicine.category || "").toLowerCase() === categoryFilter;
 
-      return [medicine.name, medicine.brand, medicine.manufacturer, medicine.pharmacyName]
-        .filter(Boolean)
-        .some((value) => value.toLowerCase().includes(searchValue));
+      return matchesSearch && matchesStock && matchesCategory;
     });
-  }, [medicines, search]);
+  }, [medicines, search, stockFilter, categoryFilter]);
 
   const addToCartHandler = (medicineId) => {
     dispatch(
@@ -147,10 +157,35 @@ function AllMedicine() {
             />
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-[12px] text-slate-500">
-            {user?.role?.toLowerCase() === "pharmacy"
-              ? "Browse all medicines while managing your own stock separately."
-              : "Quick medicine browsing with product image and stock visibility."}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="relative min-w-[190px]">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-4 pr-10 text-[12px] text-slate-600 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+              >
+                <option value="all">All Categories</option>
+                {[...new Set((medicines || []).map((medicine) => medicine?.category).filter(Boolean))].map((category) => (
+                  <option key={category} value={String(category).toLowerCase()}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            </div>
+
+            <div className="relative min-w-[190px]">
+              <select
+                value={stockFilter}
+                onChange={(e) => setStockFilter(e.target.value)}
+                className="w-full appearance-none rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-4 pr-10 text-[12px] text-slate-600 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100"
+              >
+                <option value="all">All Stock</option>
+                <option value="in-stock">In Stock</option>
+                <option value="out-of-stock">Out Of Stock</option>
+              </select>
+              <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            </div>
           </div>
         </div>
       </section>

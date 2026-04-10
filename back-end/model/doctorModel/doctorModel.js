@@ -42,11 +42,44 @@ const doctorSchema = new mongoose.Schema({
         ]
     },    
 
+
     doctorFee: {
         type: Number,
         required: true,
         min: 0
     },
+
+    paymentsHistory: [
+        {
+            amount: {
+                type: Number,
+                required: true,
+                min: 0
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            method: {
+                type: String,
+                enum: ["cash", "card", "online"],
+                required: true
+            }
+        }
+    ],
+
+    paymentStatus: {
+        type: String,
+        enum: ["paid", "pending", "unpaid", "partial"],
+        default: "unpaid"
+    },
+
+
+    amountToPay: {
+        type: Number,
+         default: 200
+    },
+
 
     clinic: {
         type: mongoose.Schema.Types.ObjectId,
@@ -78,6 +111,12 @@ const doctorSchema = new mongoose.Schema({
         default: "doctor"
     },
 
+    doctorStatus: {
+        type: String,
+        enum: ["active", "inactive"],
+        default: "active"
+    },
+
     experience: {
         type: Number,
         default: 0,
@@ -87,6 +126,16 @@ const doctorSchema = new mongoose.Schema({
     availability: {
         type: String,
         default: "9 AM - 5 PM" 
+    },
+
+    Status : {
+            type : String,
+            default : "inactive"
+    },
+
+    serviceStatus : {
+        type : String,
+        default : "activated"
     },
 
     profilePicture: {

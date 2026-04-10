@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   BadgeDollarSign,
+  ChevronDown,
   ClipboardList,
   Download,
   PackageCheck,
@@ -39,6 +40,7 @@ function OrdersBoard({
   const { orders, ordersLoading, loading, error, message } = useSelector(
     (state) => state.order
   );
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     dispatch(fetchOrders());
@@ -56,6 +58,13 @@ function OrdersBoard({
       { totalOrders: 0, totalItems: 0, totalAmount: 0 }
     );
   }, [orders]);
+
+  const filteredOrders = useMemo(() => {
+    return (orders || []).filter((order) => {
+      if (statusFilter === "all") return true;
+      return String(order?.orderStatus || "Pending").toLowerCase() === statusFilter;
+    });
+  }, [orders, statusFilter]);
 
   const escapePdfText = (text) =>
     String(text ?? "")
@@ -241,8 +250,24 @@ function OrdersBoard({
           </div>
         </div>
 
-        {allowPdfExport && orders.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
+          <div className="relative min-w-[210px]">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-2.5 pr-10 text-[12px] font-semibold text-slate-700 outline-none transition hover:border-sky-200 focus:border-sky-400 focus:ring-4 focus:ring-sky-100"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          </div>
+
+          {allowPdfExport && orders.length > 0 && (
             <button
               type="button"
               onClick={downloadAllOrdersPdf}
@@ -251,8 +276,8 @@ function OrdersBoard({
               <Download size={14} />
               Download All Orders PDF
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </section>
 
       {error && (
@@ -267,13 +292,13 @@ function OrdersBoard({
         </div>
       )}
 
-      {orders.length === 0 ? (
+      {filteredOrders.length === 0 ? (
         <section className="rounded-[32px] border border-dashed border-slate-300 bg-white/70 px-6 py-16 text-center text-slate-500 shadow-sm">
-          {emptyMessage}
+          No orders match the selected filter.
         </section>
       ) : (
         <section className="grid gap-4 lg:grid-cols-2">
-          {orders.map((order) => {
+          {filteredOrders.map((order) => {
             const customerName = order?.customerInfo?.fullName || order?.patientId?.name || "Customer";
             const customerPhone = order?.customerInfo?.phone || order?.patientId?.phone || "Phone not available";
             const address = order?.deliveryAddress;

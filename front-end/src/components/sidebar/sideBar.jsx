@@ -23,14 +23,14 @@ import {
 } from "lucide-react";
 
 const baseLinkClass = ({ isActive }) =>
-  `group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
+  `group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all ${
     isActive
-      ? "bg-gradient-to-r from-sky-600 to-teal-500 text-white shadow-lg shadow-sky-500/25"
-      : "text-slate-600 hover:bg-sky-50 hover:text-sky-700"
+      ? "bg-gradient-to-r from-sky-600 to-teal-500 text-white shadow-md shadow-sky-500/20"
+      : "text-slate-600 hover:bg-sky-50/90 hover:text-sky-700"
   }`;
 
 const subLinkClass = ({ isActive }) =>
-  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all ${
+  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
     isActive
       ? "bg-sky-50 text-sky-700"
       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
@@ -69,6 +69,14 @@ const sidebarGroups = {
       links: [
         { to: "/allMedicine", label: "Medicine Inventory", icon: Pill },
         { to: "/addMedicine", label: "Add Medicine", icon: Plus },
+      ],
+    },
+    {
+      title: "Payments",
+      icon: Package,
+      links: [
+        { to: "/payments", label: "All Payments", icon: Package },
+        { to: "/addPayment", label: "Add Payment", icon: Plus },
       ],
     },
     { to: "/admin/orders", label: "All Orders", icon: ShoppingCart },
@@ -155,15 +163,15 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 h-screen border-r border-white/60 bg-white/80 shadow-2xl shadow-slate-300/20 backdrop-blur-xl transition-[width,transform] duration-300 ${
+        className={`fixed left-0 top-0 z-50 h-screen border-r border-slate-200/80 bg-white/90 shadow-xl shadow-slate-300/20 backdrop-blur-md transition-[width,transform] duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } ${isCollapsed ? "w-24" : "w-[286px]"} lg:translate-x-0 ${
-          isCollapsed ? "lg:w-24" : "lg:w-[286px]"
+        } ${isCollapsed ? "w-20" : "w-[264px]"} lg:translate-x-0 ${
+          isCollapsed ? "lg:w-20" : "lg:w-[264px]"
         }`}
       >
         <div className="flex h-full flex-col">
           <div
-            className={`border-b border-slate-200/80 py-5 ${
+            className={`border-b border-slate-200/80 py-4 ${
               isCollapsed ? "px-3" : "px-5"
             }`}
           >
@@ -173,7 +181,7 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
                   isCollapsed ? "justify-center w-full" : "gap-3"
                 }`}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-600 to-teal-500 text-sm font-semibold text-white shadow-lg shadow-sky-500/25">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-sky-600 to-teal-500 text-sm font-semibold text-white shadow-md shadow-sky-500/20">
                   CM
                 </div>
                 {!isCollapsed && (
@@ -190,14 +198,14 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 lg:hidden"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 lg:hidden"
               >
                 <X size={18} />
               </button>
 
               <button
                 onClick={() => setIsCollapsed((prev) => !prev)}
-                className="hidden h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 lg:inline-flex"
+                className="hidden h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 lg:inline-flex"
               >
                 {isCollapsed ? (
                   <PanelLeftOpen size={18} />
@@ -208,27 +216,17 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
             </div>
           </div>
 
-          <div className={`${isCollapsed ? "px-3" : "px-4"} pt-5`}>
-            <div className="rounded-3xl bg-gradient-to-br from-sky-600 to-teal-500 px-4 py-4 text-white shadow-lg shadow-sky-500/25">
-              {isCollapsed ? (
-                <div className="flex justify-center">
-                  <Stethoscope size={20} />
-                </div>
-              ) : (
-                <>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/70">
-                    Care First
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-white/90">
-                    Simple navigation, calm colors, and faster daily clinic work.
-                  </p>
-                </>
-              )}
+          <div className={`${isCollapsed ? "px-3" : "px-4"} pt-4`}>
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/90 px-3 py-3 text-slate-600">
+              <div className={`flex items-center ${isCollapsed ? "justify-center" : "gap-2"}`}>
+                <Stethoscope size={16} className="text-sky-700" />
+                {!isCollapsed && <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Navigation</p>}
+              </div>
             </div>
           </div>
 
           <nav
-            className={`flex-1 space-y-3 overflow-y-auto py-5 ${
+            className={`flex-1 space-y-2.5 overflow-y-auto py-4 ${
               isCollapsed ? "px-3" : "px-4"
             }`}
           >
@@ -240,7 +238,7 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-3xl border border-slate-200/70 bg-white/80 p-2 shadow-sm shadow-slate-200/40"
+                    className="rounded-2xl border border-slate-200/80 bg-white p-1.5"
                   >
                     <button
                       type="button"
@@ -251,12 +249,12 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
                               prev === item.title ? null : item.title
                             )
                       }
-                      className={`flex w-full items-center rounded-2xl px-3 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 ${
+                      className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 ${
                         isCollapsed ? "justify-center" : "gap-3"
                       }`}
                       title={isCollapsed ? item.title : undefined}
                     >
-                      <span className="rounded-2xl bg-sky-50 p-2 text-sky-700">
+                      <span className="rounded-lg bg-sky-50 p-2 text-sky-700">
                         <GroupIcon size={18} />
                       </span>
                       {!isCollapsed && (
@@ -305,7 +303,7 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
                   }
                   title={isCollapsed ? item.label : undefined}
                 >
-                  <span className="rounded-2xl bg-white/70 p-2 shadow-sm shadow-slate-200/40">
+                  <span className="rounded-lg bg-white/80 p-2 shadow-sm shadow-slate-200/30">
                     <Icon size={18} />
                   </span>
                   {!isCollapsed && item.label}
